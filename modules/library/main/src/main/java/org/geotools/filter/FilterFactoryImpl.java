@@ -22,6 +22,7 @@ package org.geotools.filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,6 +48,7 @@ import org.geotools.filter.expression.PropertyAccessorFactory;
 import org.geotools.filter.expression.SubtractImpl;
 import org.geotools.filter.identity.FeatureIdImpl;
 import org.geotools.filter.identity.GmlObjectIdImpl;
+import org.geotools.filter.identity.ResourceIdImpl;
 import org.geotools.filter.spatial.BBOXImpl;
 import org.geotools.filter.spatial.BeyondImpl;
 import org.geotools.filter.spatial.ContainsImpl;
@@ -89,6 +91,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.capability.ArithmeticOperators;
@@ -116,6 +119,8 @@ import org.opengis.filter.expression.Subtract;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.GmlObjectId;
 import org.opengis.filter.identity.Identifier;
+import org.opengis.filter.identity.ResourceId;
+import org.opengis.filter.identity.Version;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.filter.spatial.BBOX;
@@ -181,6 +186,27 @@ public class FilterFactoryImpl implements FilterFactory {
     
     public GmlObjectId gmlObjectId(String id) {
         return new GmlObjectIdImpl( id );
+    }
+    
+    /**
+     * @see org.opengis.filter.FilterFactory#resourceId(java.lang.String, java.lang.String)
+     */
+    @Override
+    public ResourceId resourceId(String fid, String featureVersion) {
+    	return new ResourceIdImpl(fid, featureVersion);
+    }
+
+    /**
+     * @see org.opengis.filter.FilterFactory#resourceId(java.lang.String, java.lang.String, java.lang.String, org.opengis.filter.identity.Version, java.util.Date, java.util.Date)
+     */
+    public ResourceId resourceId(String fid, String featureVersion, String previousRid, Version version, Date startTime,
+    		Date endTime) {
+    	ResourceIdImpl id = new ResourceIdImpl(fid, featureVersion);
+    	id.setPreviousRid(previousRid);
+    	id.setVersion(version);
+    	id.setStartTime(startTime);
+    	id.setEndTime(endTime);
+    	return id;
     }
     
     public And and(Filter f, Filter g ) {
@@ -346,6 +372,10 @@ public class FilterFactoryImpl implements FilterFactory {
         return new IsNullImpl( this, expr );
     }
 
+    public PropertyIsNil isNil(Expression expr, Object nilReason) {
+    	return new IsNilImpl(this, expr, nilReason);
+    }
+    	
     /**
      * Checks if the bounding box of the feature's geometry overlaps the
      * specified bounding box.
