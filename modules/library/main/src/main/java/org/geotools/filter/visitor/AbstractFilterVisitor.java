@@ -49,6 +49,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.expression.ExpressionVisitor;
@@ -470,6 +471,18 @@ public class AbstractFilterVisitor implements org.geotools.filter.FilterVisitor,
     		}
     	}
     	return filter;
+    }
+    
+    /**
+     * Visits filter.getExpression() if an expression visitor was set.
+     */
+    public Object visit(PropertyIsNil filter, Object extraData) {
+        if ( expressionVisitor != null ) {
+            if ( filter.getExpression() != null ) {
+                filter.getExpression().accept( expressionVisitor, extraData );
+            }
+        }
+        return filter;
     }
     
     /**

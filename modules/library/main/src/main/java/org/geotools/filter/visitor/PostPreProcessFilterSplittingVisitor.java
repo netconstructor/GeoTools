@@ -45,6 +45,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.expression.Add;
@@ -728,7 +729,14 @@ public class PostPreProcessFilterSplittingVisitor implements FilterVisitor, Expr
             return null;
         }
 
-	    public Object visit(PropertyIsNull filter, Object notUsed) {
+        public Object visit(PropertyIsNil filter, Object extraData) {
+        	return visitNullNil(filter, filter.getExpression());
+        }
+        public Object visit(PropertyIsNull filter, Object notUsed) {
+        	return visitNullNil(filter, filter.getExpression());
+        }
+
+        Object visitNullNil(Filter filter, Expression e) {
 	        if( original==null )
 	        	original=filter;
 

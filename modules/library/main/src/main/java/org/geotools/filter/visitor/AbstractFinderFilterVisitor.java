@@ -31,6 +31,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.expression.Add;
@@ -202,6 +203,11 @@ public abstract class AbstractFinderFilterVisitor implements FilterVisitor, Expr
         return found;
     }
 
+    public Object visit(PropertyIsNil filter, Object data) {
+        filter.getExpression().accept(this, data);
+        return found;
+    }
+    
     public Object visit( final BBOX filter, Object data ) {
         // We will just use a simple wrapper until we add a getExpression method
         PropertyName property = new PropertyName(){
