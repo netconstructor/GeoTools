@@ -9,6 +9,7 @@
  */
 package org.opengis.filter;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -38,6 +39,8 @@ import org.opengis.filter.expression.Subtract;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.GmlObjectId;
 import org.opengis.filter.identity.Identifier;
+import org.opengis.filter.identity.ResourceId;
+import org.opengis.filter.identity.Version;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.filter.sort.SortOrder;
 import org.opengis.filter.spatial.BBOX;
@@ -98,6 +101,11 @@ public interface FilterFactory {
 
     /** Creates a new gml object id from a string */
     GmlObjectId gmlObjectId(String id);
+    
+    ResourceId resourceId(String fid, String featureVersion);
+    
+    ResourceId resourceId(String fid, String featureVersion, String previousRid, Version version,
+            Date startTime, Date endTime);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
@@ -227,6 +235,9 @@ public interface FilterFactory {
     
     /** Checks if an expression's value is {@code null}. */
     PropertyIsNull isNull(Expression expr);
+    
+    /** Checks if an expression's value is nil. */
+    PropertyIsNil isNil(Expression expr, Object nilReason);
 
 ////////////////////////////////////////////////////////////////////////////////
 //
