@@ -45,6 +45,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.expression.Literal;
@@ -257,6 +258,10 @@ class SFSFilterVisitor implements FilterVisitor {
         throw new UnsupportedOperationException("visit (PropertyIsNull filter, Object extraData)");
     }
 
+    public Object visit(PropertyIsNil filter, Object extraData) {
+        throw new UnsupportedOperationException("visit (PropertyIsNull filter, Object extraData)");
+    }
+    
     public Object visit(BBOX filter, Object extraData) {
         Polygon polygon = (Polygon) filter.getExpression2().evaluate(extraData);
         Envelope box = polygon.getEnvelopeInternal();
