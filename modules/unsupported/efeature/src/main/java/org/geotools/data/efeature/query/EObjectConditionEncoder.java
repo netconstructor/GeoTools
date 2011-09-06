@@ -39,6 +39,7 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.capability.FilterCapabilities;
@@ -949,6 +950,11 @@ public class EObjectConditionEncoder implements FilterVisitor, ExpressionVisitor
         //
         return eCondition;
 
+    }
+    
+    public EAttributeValueIsNull visit(PropertyIsNil filter, Object extraData)
+    throws RuntimeException {
+    	throw new UnsupportedOperationException("isNil not supported");
     }
 
     /**
