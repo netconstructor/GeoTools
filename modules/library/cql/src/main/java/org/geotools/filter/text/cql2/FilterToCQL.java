@@ -33,9 +33,11 @@ import org.opengis.filter.PropertyIsGreaterThanOrEqualTo;
 import org.opengis.filter.PropertyIsLessThan;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
 import org.opengis.filter.PropertyIsLike;
+import org.opengis.filter.PropertyIsNil;
 import org.opengis.filter.PropertyIsNotEqualTo;
 import org.opengis.filter.PropertyIsNull;
 import org.opengis.filter.expression.Expression;
+import org.opengis.filter.expression.NilExpression;
 import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.spatial.BBOX;
 import org.opengis.filter.spatial.Beyond;
@@ -88,6 +90,18 @@ import org.opengis.filter.temporal.TOverlaps;
 class FilterToCQL implements FilterVisitor {
     /** Standard java logger */
     private static Logger LOGGER = org.geotools.util.logging.Logging.getLogger(FilterToCQL.class.getName());
+    
+    /**
+     * Process the possibly user supplied extraData parameter into a StringBuffer.
+     * @param extraData
+     * @return
+     */
+    protected StringBuffer asStringBuffer( Object extraData){
+        if( extraData instanceof StringBuffer){
+            return (StringBuffer) extraData;
+        }
+        return new StringBuffer();
+    }
     
     /**
      * Exclude everything; using an old SQL trick of 1=0.
@@ -213,6 +227,10 @@ class FilterToCQL implements FilterVisitor {
     	return FilterToTextUtil.buildIsNull(filter, extraData);
     }
     
+    public Object visit(PropertyIsNil filter, Object extraData) {
+        throw new UnsupportedOperationException("isNil not supported");
+    }
+    
     public Object visit(BBOX filter, Object extraData) {
         
     	return FilterToTextUtil.buildBBOX(filter, extraData);
@@ -276,6 +294,19 @@ class FilterToCQL implements FilterVisitor {
      */
     public Object visitNullFilter(Object extraData) {
         throw new NullPointerException("Cannot encode null as a Filter");
+    }
+    
+    /**
+     * Not sure how to record an unset expression in CQL; going
+     * to use an emptry string for now.
+     */
+    public Object visit(NilExpression expression, Object extraData) {
+        LOGGER.finer("exporting Expression Nil");
+
+        StringBuffer output = asStringBuffer(extraData);
+        output.append( "\"\"" );
+
+        return output;
     }
     
     public Object visit(After after, Object extraData) {
