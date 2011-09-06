@@ -259,7 +259,7 @@ class SFSFilterVisitor implements FilterVisitor {
     }
 
     public Object visit(PropertyIsNil filter, Object extraData) {
-        throw new UnsupportedOperationException("visit (PropertyIsNull filter, Object extraData)");
+        throw new UnsupportedOperationException("visit (PropertyIsNil filter, Object extraData)");
     }
     
     public Object visit(BBOX filter, Object extraData) {
