@@ -41,5 +41,6 @@ public abstract class PrimaryKeyFinder {
      * @param cx
      * @return
      */
-    public abstract PrimaryKey getPrimaryKey(JDBCDataStore store, String schema, String table, Connection cx) throws SQLException;
+    public abstract PrimaryKey getPrimaryKey(IJDBCDataStore store, String schema, String table, Connection cx) throws SQLException;
+
 }

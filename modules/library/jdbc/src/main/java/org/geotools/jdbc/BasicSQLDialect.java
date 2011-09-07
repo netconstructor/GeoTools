@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.Geometry;
 
 public abstract class BasicSQLDialect extends SQLDialect {
 
-    protected BasicSQLDialect(JDBCDataStore dataStore) {
+    protected BasicSQLDialect(IJDBCDataStore dataStore) {
         super(dataStore);
     }
 

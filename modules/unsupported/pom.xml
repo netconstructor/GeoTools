@@ -157,6 +157,12 @@
          <module>feature-aggreate</module>
        </modules>
      </profile>
+     <profile>
+       <id>geogit-versioning</id>
+       <modules>
+         <module>geogit-versioning</module>
+       </modules>
+     </profile>
 
      <profile>
        <id>unsupported</id>
@@ -167,6 +173,7 @@
          <module>csv</module>
          <module>epsg-oracle</module>
          <module>jdbc-ng</module>
+         <module>geogit-versioning</module>
          <module>postgis-versioned</module>
          <module>vpf</module>
          <module>matfile5</module>
@@ -179,6 +186,7 @@
 
   <!-- Modules included in a normal build -->
   <modules>
+    <module>geogit-versioning</module>
     <module>swing</module>
 	<module>swt</module>
     <module>process</module>

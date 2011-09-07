@@ -1391,6 +1391,14 @@
   <!--     Maven repository is implicit and doesn't need to be specified. -->
   <!-- ================================================================== -->
   <repositories>
+  
+      <repository>
+      <id>oracleReleases</id>
+      <name>Oracle Released Java Packages</name>
+      <url>http://download.oracle.com/maven</url>
+      <layout>default</layout>
+    </repository>
+    
     <repository>
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net repository</name>

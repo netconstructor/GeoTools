@@ -41,7 +41,7 @@ public class HeuristicPrimaryKeyFinder extends PrimaryKeyFinder {
     protected static final Logger LOGGER = Logging.getLogger(HeuristicPrimaryKeyFinder.class);
 
     @Override
-    public PrimaryKey getPrimaryKey(JDBCDataStore store, String databaseSchema, String tableName,
+    public PrimaryKey getPrimaryKey(IJDBCDataStore store, String databaseSchema, String tableName,
             Connection cx) throws SQLException {
         DatabaseMetaData metaData = cx.getMetaData();
         LOGGER.log(Level.FINE, "Getting information about primary keys of {0}", tableName);
@@ -85,7 +85,7 @@ public class HeuristicPrimaryKeyFinder extends PrimaryKeyFinder {
     /*
      * Creates a key from a primary key or unique index.
      */
-    PrimaryKey createPrimaryKey(JDBCDataStore store, ResultSet index, DatabaseMetaData metaData,
+    PrimaryKey createPrimaryKey(IJDBCDataStore store, ResultSet index, DatabaseMetaData metaData,
             String databaseSchema, String tableName, Connection cx) throws SQLException {
         ArrayList<PrimaryKeyColumn> cols = new ArrayList();
 

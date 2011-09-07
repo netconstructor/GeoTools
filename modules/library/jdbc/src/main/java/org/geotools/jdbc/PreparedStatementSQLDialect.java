@@ -44,7 +44,7 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 public abstract class PreparedStatementSQLDialect extends SQLDialect {
 
-    protected PreparedStatementSQLDialect(JDBCDataStore dataStore) {
+    protected PreparedStatementSQLDialect(IJDBCDataStore dataStore) {
         super(dataStore);
         
     }

@@ -38,7 +38,7 @@ public class CompositePrimaryKeyFinder extends PrimaryKeyFinder {
     }
 
     @Override
-    public PrimaryKey getPrimaryKey(JDBCDataStore store, String schema, String table, Connection cx)
+    public PrimaryKey getPrimaryKey(IJDBCDataStore store, String schema, String table, Connection cx)
             throws SQLException {
         for (PrimaryKeyFinder finder : finders) {
             PrimaryKey pk = finder.getPrimaryKey(store, schema, table, cx);

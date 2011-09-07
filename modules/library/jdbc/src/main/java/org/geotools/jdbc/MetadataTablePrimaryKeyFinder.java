@@ -101,7 +101,7 @@ public class MetadataTablePrimaryKeyFinder extends PrimaryKeyFinder {
     }
 
     @Override
-    public PrimaryKey getPrimaryKey(JDBCDataStore store, String schema, String table, Connection cx)
+    public PrimaryKey getPrimaryKey(IJDBCDataStore store, String schema, String table, Connection cx)
             throws SQLException {
         ResultSet rs = null;
         ResultSet tables = null;
@@ -228,7 +228,7 @@ public class MetadataTablePrimaryKeyFinder extends PrimaryKeyFinder {
         return result;
     }
     
-    String getMetadataSchema(JDBCDataStore store) {
+    String getMetadataSchema(IJDBCDataStore store) {
         if(tableSchema != null)
             return tableSchema;
         

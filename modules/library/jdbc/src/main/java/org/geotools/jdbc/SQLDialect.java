@@ -148,13 +148,13 @@ public abstract class SQLDialect {
     /**
      * The datastore using the dialect
      */
-    protected JDBCDataStore dataStore;
+    protected IJDBCDataStore dataStore;
     
     /**
      * Creates the dialect.
      * @param dataStore The dataStore using the dialect.
      */
-    protected SQLDialect( JDBCDataStore dataStore ) {
+    protected SQLDialect( IJDBCDataStore dataStore ) {
         this.dataStore = dataStore;
     }
     

@@ -136,24 +136,7 @@ import com.vividsolutions.jts.geom.Point;
  * @source $URL$
  */
 public final class JDBCDataStore extends ContentDataStore
-    implements GmlObjectStore {
-    
-    /**
-     * The native SRID associated to a certain descriptor
-     * TODO: qualify this key with 'org.geotools.jdbc'
-     */
-    public static final String JDBC_NATIVE_SRID = "nativeSRID";
-    
-    /**
-     * Boolean marker stating whether the feature type is to be considered read only
-     */
-    public static final String JDBC_READ_ONLY = "org.geotools.jdbc.readOnly";
-    
-    /**
-     * The key for attribute descriptor user data which specifies the original database column data 
-     * type.
-     */
-    public static final String JDBC_NATIVE_TYPENAME = "org.geotools.jdbc.nativeTypeName";
+    implements GmlObjectStore, IJDBCDataStore {
     
     /**
      * name of table to use to store geometries when {@link #associations}
@@ -360,23 +343,19 @@ public final class JDBCDataStore extends ContentDataStore
         this.exposePrimaryKeyColumns = exposePrimaryKeyColumns;
     }
     
-    /**
-     * The dialect the datastore uses to generate sql statements in order to
-     * communicate with the underlying database.
-     *
-     * @return The dialect, never <code>null</code>.
-     */
-    public SQLDialect getSQLDialect() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCDataStore#getSQLDialect()
+	 */
+    @Override
+	public SQLDialect getSQLDialect() {
         return dialect;
     }
 
-    /**
-     * Sets the dialect the datastore uses to generate sql statements in order to
-     * communicate with the underlying database.
-     *
-     * @param dialect The dialect, never <code>null</code>.
-     */
-    public void setSQLDialect(SQLDialect dialect) {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCDataStore#setSQLDialect(org.geotools.jdbc.SQLDialect)
+	 */
+    @Override
+	public void setSQLDialect(SQLDialect dialect) {
         if (dialect == null) {
             throw new NullPointerException();
         }
@@ -384,23 +363,19 @@ public final class JDBCDataStore extends ContentDataStore
         this.dialect = dialect;
     }
 
-    /**
-     * The data source the datastore uses to obtain connections to the underlying
-     * database.
-     *
-     * @return The data source, never <code>null</code>.
-     */
-    public DataSource getDataSource() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCDataStore#getDataSource()
+	 */
+    @Override
+	public DataSource getDataSource() {
         return dataSource;
     }
 
-    /**
-     * Sets the data source the datastore uses to obtain connections to the underlying
-     * database.
-     *
-     * @param dataSource The data source, never <code>null</code>.
-     */
-    public void setDataSource(DataSource dataSource) {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCDataStore#setDataSource(javax.sql.DataSource)
+	 */
+    @Override
+	public void setDataSource(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
@@ -925,7 +900,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Checks whether the tableName corresponds to a view
      */
-    boolean isView(DatabaseMetaData metaData, String databaseSchema, String tableName) 
+    public boolean isView(DatabaseMetaData metaData, String databaseSchema, String tableName) 
         throws SQLException  {
         
         ResultSet tables = null;
@@ -1022,7 +997,7 @@ public final class JDBCDataStore extends ContentDataStore
      * Returns the type of the column by inspecting the metadata, with the collaboration
      * of the dialect
      */
-    protected Class getColumnType(DatabaseMetaData metaData, String databaseSchema2,
+    public Class getColumnType(DatabaseMetaData metaData, String databaseSchema2,
             String tableName, String columnName) throws SQLException {
         ResultSet columns =  null;
         try {
@@ -3844,7 +3819,7 @@ public final class JDBCDataStore extends ContentDataStore
      * isolation.
      * </p>
      */
-    protected FilterToSQL createFilterToSQL(SimpleFeatureType featureType) {
+    public FilterToSQL createFilterToSQL(SimpleFeatureType featureType) {
         return initializeFilterToSQL( ((BasicSQLDialect)dialect).createFilterToSQL(), featureType  );
     }
     
@@ -3946,7 +3921,7 @@ public final class JDBCDataStore extends ContentDataStore
      * prefixes the table name with it.
      * @param hints TODO
      */
-    protected void encodeTableName(String tableName, StringBuffer sql, Hints hints) throws SQLException {
+    public void encodeTableName(String tableName, StringBuffer sql, Hints hints) throws SQLException {
         VirtualTable vtDefinition = virtualTables.get(tableName);
         if(vtDefinition != null) {
             sql.append("(").append(vtDefinition.expandParameters(hints)).append(")");
@@ -4208,5 +4183,10 @@ public final class JDBCDataStore extends ContentDataStore
 
         return tx;
     }
+
+
+
+
+
     
 }
