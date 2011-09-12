@@ -223,7 +223,7 @@ public abstract class JDBC3DTest extends JDBCTestSupport {
     // disabled as the liter coordinate sequence has still not been updated to support 3d data
     public void testRendererBehaviour() throws Exception {
         // make sure the hints are supported
-        ContentFeatureSource fs = dataStore.getFeatureSource(tname(LINE3D));
+        ContentFeatureSource fs = (ContentFeatureSource) dataStore.getFeatureSource(tname(LINE3D));
         assertTrue(fs.getSupportedHints().contains(Hints.JTS_COORDINATE_SEQUENCE_FACTORY));
 
         // setup a query that mimicks the streaming renderer behaviour

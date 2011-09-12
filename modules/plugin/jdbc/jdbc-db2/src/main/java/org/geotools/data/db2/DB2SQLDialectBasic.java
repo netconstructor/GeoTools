@@ -183,7 +183,7 @@ public class DB2SQLDialectBasic extends BasicSQLDialect {
     	delegate.encodeGeometryColumnGeneralized(gatt, srid, sql, distance);
     }
     @Override
-    protected void addSupportedHints(Set<Key> hints) {
+	public void addSupportedHints(Set<Key> hints) {
     	delegate.addSupportedHints(hints);
     }
     @Override

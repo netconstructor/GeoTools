@@ -148,7 +148,7 @@ public abstract class JDBCVirtualTableTest extends JDBCTestSupport {
     }
     
     public void testInvalidQuery() throws Exception {
-        String sql = dataStore.getVirtualTables().get("riverReduced").getSql();
+        String sql = ((VirtualTable) dataStore.getVirtualTables().get("riverReduced")).getSql();
         
         VirtualTable vt = new VirtualTable("riverPolluted", "SOME EXTRA GARBAGE " + sql);
         vt.addGeometryMetadatata("geom", LineString.class, -1);

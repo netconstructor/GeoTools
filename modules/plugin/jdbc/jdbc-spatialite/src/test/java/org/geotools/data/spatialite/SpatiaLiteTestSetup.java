@@ -25,6 +25,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
@@ -37,7 +38,7 @@ public class SpatiaLiteTestSetup extends JDBCTestSetup {
     }
     
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         dataStore.setDatabaseSchema(null);
     }

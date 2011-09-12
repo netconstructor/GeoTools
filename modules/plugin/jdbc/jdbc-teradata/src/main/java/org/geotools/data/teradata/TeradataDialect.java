@@ -27,6 +27,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,9 +37,8 @@ import java.util.logging.Level;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.geotools.filter.function.EnvFunction;
 import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.NullPrimaryKey;
 import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
@@ -61,10 +61,8 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
-import java.text.MessageFormat;
 
 public class TeradataDialect extends PreparedStatementSQLDialect {
 
@@ -136,8 +134,8 @@ public class TeradataDialect extends PreparedStatementSQLDialect {
     /** support LOB workaround */
     private boolean lobWorkaroundEnabled;
     
-    public TeradataDialect(JDBCDataStore store) {
-        super(store);                   
+    public TeradataDialect(IJDBCDataStore dataStore) {
+        super(dataStore);                   
     }
 
     public boolean isLobWorkaroundEnabled() {

@@ -16,6 +16,7 @@
  */
 package org.geotools.data.teradata;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCTestSetup;
 import org.geotools.jdbc.JDBCTestSupport;
@@ -54,7 +55,7 @@ public class TeradataDataStoreFactoryTest extends JDBCTestSupport {
         params.put(DBTYPE.key, dbtype);
 
         assertTrue(factory.canProcess(params));
-        JDBCDataStore store = factory.createDataStore(params);
+        IJDBCDataStore store = factory.createDataStore(params);
         assertNotNull(store);
         try {
             // check dialect

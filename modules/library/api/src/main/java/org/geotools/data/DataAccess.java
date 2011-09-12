@@ -187,6 +187,7 @@ public interface DataAccess<T extends FeatureType, F extends Feature> {
      */
     void dispose();
 
+
     //FeatureSource<T,F> getView(Query query) throws IOException, SchemaException;
 
     //FeatureReader<T,F> getFeatureReader(Query query, Transaction transaction)

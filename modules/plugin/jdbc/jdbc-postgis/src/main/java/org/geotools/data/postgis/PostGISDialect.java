@@ -35,7 +35,7 @@ import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.BasicSQLDialect;
 import org.geotools.jdbc.ColumnMetadata;
-import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.Version;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -96,7 +96,7 @@ public class PostGISDialect extends BasicSQLDialect {
     
     static final Version V_1_5_0 = new Version("1.5.0");
 
-    public PostGISDialect(JDBCDataStore dataStore) {
+    public PostGISDialect(IJDBCDataStore dataStore) {
         super(dataStore);
     }
 
@@ -185,7 +185,7 @@ public class PostGISDialect extends BasicSQLDialect {
     public void encodeGeometryColumn(GeometryDescriptor gatt, int srid,
             StringBuffer sql) {
         
-        boolean geography = "geography".equals(gatt.getUserData().get(JDBCDataStore.JDBC_NATIVE_TYPENAME));
+        boolean geography = "geography".equals(gatt.getUserData().get(IJDBCDataStore.JDBC_NATIVE_TYPENAME));
         
         sql.append("encode(");
         sql.append("ST_AsBinary(");
@@ -608,9 +608,9 @@ public class PostGISDialect extends BasicSQLDialect {
 
                     // lookup or reverse engineer the srid
                     int srid = -1;
-                    if (gd.getUserData().get(JDBCDataStore.JDBC_NATIVE_SRID) != null) {
+                    if (gd.getUserData().get(IJDBCDataStore.JDBC_NATIVE_SRID) != null) {
                         srid = (Integer) gd.getUserData().get(
-                                JDBCDataStore.JDBC_NATIVE_SRID);
+                                IJDBCDataStore.JDBC_NATIVE_SRID);
                     } else if (gd.getCoordinateReferenceSystem() != null) {
                         try {
                             Integer result = CRS.lookupEpsgCode(gd

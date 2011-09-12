@@ -23,7 +23,7 @@ import org.geotools.jdbc.JDBCTestSetup;
 
 public class OracleGeometrylessTestSetup extends JDBCGeometrylessTestSetup {
 
-    protected OracleGeometrylessTestSetup(JDBCTestSetup delegate) {
+    public OracleGeometrylessTestSetup(JDBCTestSetup delegate) {
         super(delegate);
     }
 

@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -55,7 +56,7 @@ public class OracleNGDataStoreFactory extends JDBCDataStoreFactory {
     public static final Param LOOSEBBOX = new Param("Loose bbox", Boolean.class, "Perform only primary filter on bbox", false, Boolean.TRUE);
     
     @Override
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new OracleDialect(dataStore);
     }
 

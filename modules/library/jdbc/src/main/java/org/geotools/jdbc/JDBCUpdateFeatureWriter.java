@@ -42,20 +42,21 @@ public class JDBCUpdateFeatureWriter extends JDBCFeatureReader implements
     ReferencedEnvelope lastBounds;
     
     public JDBCUpdateFeatureWriter(String sql, Connection cx,
-            JDBCFeatureSource featureSource, Hints hints) throws SQLException, IOException {
+            IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Hints hints) throws SQLException, IOException {
         
         super(sql, cx, featureSource, featureSource.getSchema(), hints);
         last = new ResultSetFeature( rs, cx );
     }
     
     public JDBCUpdateFeatureWriter(PreparedStatement ps, Connection cx,
-            JDBCFeatureSource featureSource, Hints hints) throws SQLException, IOException {
+            IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Hints hints) throws SQLException, IOException {
         
         super(ps, cx, featureSource, featureSource.getSchema(), hints);
         last = new ResultSetFeature( rs, ps.getConnection());
     }
 
-    public SimpleFeature next() throws IOException, IllegalArgumentException,
+
+	public SimpleFeature next() throws IOException, IllegalArgumentException,
             NoSuchElementException {
         
         ensureNext();

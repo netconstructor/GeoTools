@@ -18,14 +18,14 @@ package org.geotools.data.postgis;
 
 import java.util.Properties;
 
-import org.geotools.jdbc.JDBCDataStore;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
 
 public class PostGISTestSetup extends JDBCTestSetup {
 
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         
         // the unit tests assume a non loose behaviour

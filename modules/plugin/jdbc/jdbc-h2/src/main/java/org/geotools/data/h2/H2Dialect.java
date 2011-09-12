@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.geotools.geometry.jts.Geometries;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.referencing.CRS;
@@ -70,7 +71,7 @@ public class H2Dialect extends SQLDialect {
     
     public static String H2_SPATIAL_INDEX = "org.geotools.data.h2.spatialIndex";
     
-    public H2Dialect( JDBCDataStore dataStore ) {
+    public H2Dialect( IJDBCDataStore dataStore ) {
         super( dataStore );
     }
     

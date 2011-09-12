@@ -18,9 +18,11 @@ package org.geotools.data;
 
 import java.awt.RenderingHints;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Set;
 
 import org.geotools.factory.Hints;
+import org.geotools.factory.Hints.Key;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;

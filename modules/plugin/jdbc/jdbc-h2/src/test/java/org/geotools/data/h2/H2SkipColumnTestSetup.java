@@ -1,5 +1,6 @@
 package org.geotools.data.h2;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCSkipColumnTestSetup;
 
@@ -10,7 +11,7 @@ public class H2SkipColumnTestSetup extends JDBCSkipColumnTestSetup {
     }
 
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         dataStore.setDatabaseSchema(null);
     }

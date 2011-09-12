@@ -28,6 +28,7 @@ import org.geotools.data.jdbc.datasource.DBCPDataSource;
 import org.geotools.feature.type.BasicFeatureTypes;
 import org.geotools.jdbc.CompositePrimaryKeyFinder;
 import org.geotools.jdbc.HeuristicPrimaryKeyFinder;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.MetadataTablePrimaryKeyFinder;
@@ -90,7 +91,7 @@ public class TeradataDataStoreFactory extends JDBCDataStoreFactory {
             new HeuristicPrimaryKeyFinder());
 
     @Override
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new TeradataDialect(dataStore);
     }
 

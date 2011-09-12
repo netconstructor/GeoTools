@@ -78,7 +78,9 @@ import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.Id;
 import org.opengis.filter.PropertyIsLessThanOrEqualTo;
@@ -548,7 +550,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @return The mapped sql type from {@link Types}, Types.OTHER if no such
      * mapping exists.
      */
-    public Integer getMapping(Class<?> clazz) {
+    public Integer getMapping(Class clazz) {
         Integer mapping = getClassToSqlTypeMappings().get(clazz);
 
         if (mapping == null) {
@@ -606,6 +608,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @throws IllegalArgumentException If the table already exists.
      * @throws IOException If the table cannot be created due to an error.
      */
+    @Override
     public void createSchema(final SimpleFeatureType featureType)
         throws IOException {
         if (entry(featureType.getName()) != null) {
@@ -740,13 +743,13 @@ public final class JDBCDataStore extends ContentDataStore
         if (schema == null) {
             // if the schema still haven't been computed, force its computation so
             // that we can decide if the feature type is read only
-            schema = new JDBCFeatureSource(entry, null).buildFeatureType();
+            schema = new JDBCFeatureSource<SimpleFeatureType, SimpleFeature>(entry, null).buildFeatureType();
             entry.getState(Transaction.AUTO_COMMIT).setFeatureType(schema);
         }
 
         Object readOnlyMarker = schema.getUserData().get(JDBC_READ_ONLY);
         if (Boolean.TRUE.equals(readOnlyMarker)) {
-            return new JDBCFeatureSource(entry, null);
+            return new JDBCFeatureSource<SimpleFeatureType, SimpleFeature>(entry, null);
         }
         return new JDBCFeatureStore(entry, null);
     }
@@ -776,7 +779,7 @@ public final class JDBCDataStore extends ContentDataStore
      * The list is generated from the underlying database metadata.
      * </p>
      */
-    protected List createTypeNames() throws IOException {
+    public List createTypeNames() throws IOException {
         Connection cx = createConnection();
 
         /*
@@ -836,7 +839,7 @@ public final class JDBCDataStore extends ContentDataStore
      * the underlying database metadata.
      *
      */
-    protected PrimaryKey getPrimaryKey(ContentEntry entry)
+    public PrimaryKey getPrimaryKey(ContentEntry entry)
         throws IOException {
         JDBCState state = (JDBCState) entry.getState(Transaction.AUTO_COMMIT);
 
@@ -1024,8 +1027,9 @@ public final class JDBCDataStore extends ContentDataStore
      * deriving it from the underlying database metadata.
      *
      */
-    protected PrimaryKey getPrimaryKey(SimpleFeatureType featureType)
+    public PrimaryKey getPrimaryKey(SimpleFeatureType featureType)
         throws IOException {
+    	
         return getPrimaryKey(ensureEntry(featureType.getName()));
     }
     
@@ -1050,7 +1054,7 @@ public final class JDBCDataStore extends ContentDataStore
      *            Specifies rows to include in bounds calculation, as well as how many features and
      *            the offset if needed
      */
-    protected ReferencedEnvelope getBounds(SimpleFeatureType featureType, Query query, Connection cx)
+    public ReferencedEnvelope getBounds(SimpleFeatureType featureType, Query query, Connection cx)
             throws IOException {
 
         // handle geometryless case by returning an emtpy envelope
@@ -1187,7 +1191,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Returns the count of the features for a particular feature type / table.
      */
-    protected int getCount(SimpleFeatureType featureType, Query query, Connection cx)
+    public int getCount(SimpleFeatureType featureType, Query query, Connection cx)
         throws IOException {
         
         CountVisitor v = new CountVisitor();
@@ -1198,8 +1202,8 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Results the value of an aggregate function over a query.
      */
-    protected Object getAggregateValue(FeatureVisitor visitor, SimpleFeatureType featureType, Query query, Connection cx ) 
-        throws IOException {
+	public Object getAggregateValue(FeatureVisitor visitor, SimpleFeatureType featureType, Query query, Connection cx ) 
+	        throws IOException {
         
         //get the name of the function
         String function = getAggregateFunctions().get( visitor.getClass() );
@@ -1233,11 +1237,11 @@ public final class JDBCDataStore extends ContentDataStore
             
             try {
                 if ( dialect instanceof PreparedStatementSQLDialect ) {
-                    st = selectAggregateSQLPS(function, att, featureType, query, cx);
+                    st = selectAggregateSQLPS(function, att, (SimpleFeatureType) featureType, query, cx);
                     rs = ((PreparedStatement)st).executeQuery();
                 } 
                 else {
-                    String sql = selectAggregateSQL(function, att, featureType, query);
+                    String sql = selectAggregateSQL(function, att, (SimpleFeatureType) featureType, query);
                     LOGGER.fine( sql );
                     
                     st = cx.createStatement();
@@ -1424,7 +1428,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Updates an existing feature(s) in the database for a particular feature type / table.
      */
-    protected void update(SimpleFeatureType featureType, AttributeDescriptor[] attributes,
+    public void update(SimpleFeatureType featureType, AttributeDescriptor[] attributes,
         Object[] values, Filter filter, Connection cx) throws IOException, SQLException {
         if ((attributes == null) || (attributes.length == 0)) {
             LOGGER.warning("Update called with no attributes, doing nothing.");
@@ -1481,7 +1485,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Deletes an existing feature(s) in the database for a particular feature type / table.
      */
-    protected void delete(SimpleFeatureType featureType, Filter filter, Connection cx)
+    public void delete(SimpleFeatureType featureType, Filter filter, Connection cx)
         throws IOException {
         
         Statement st = null;
@@ -1571,7 +1575,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Gets a database connection for the specified feature store.
      */
-    protected final Connection getConnection(JDBCState state) throws IOException {
+    public final Connection getConnection(JDBCState state) throws IOException {
         return getConnection(state.getTransaction());
     }
 
@@ -1582,7 +1586,7 @@ public final class JDBCDataStore extends ContentDataStore
      * </p>.
      *
      */
-    protected final Connection createConnection() {
+    public final Connection createConnection() {
         try {
             LOGGER.fine( "CREATE CONNECTION");
             Connection cx = getDataSource().getConnection();
@@ -1600,7 +1604,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Releases an existing connection.
      */
-    protected final void releaseConnection( Connection cx, JDBCState state ) {
+    public final void releaseConnection( Connection cx, JDBCState state ) {
         //if the state is based off the AUTO_COMMIT transaction, close the 
         // connection, otherwise wait until the transaction itself is closed to 
         // close the connection
@@ -1870,7 +1874,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param tx The transaction.
      * @param cx The database connection.
      */
-    protected void ensureAuthorization(SimpleFeatureType featureType, Filter filter, Transaction tx, Connection cx) 
+    public void ensureAuthorization(SimpleFeatureType featureType, Filter filter, Transaction tx, Connection cx) 
         throws IOException, SQLException {
         
         Query query = new DefaultQuery(featureType.getTypeName(), filter, Query.NO_NAMES);
@@ -1916,7 +1920,7 @@ public final class JDBCDataStore extends ContentDataStore
      * Helper method for creating geometry association table if it does not
      * exist.
      */
-    protected void ensureAssociationTablesExist(Connection cx)
+    public void ensureAssociationTablesExist(Connection cx)
         throws IOException, SQLException {
         // look for feature relationship table
         ResultSet tables = cx.getMetaData()
@@ -2099,7 +2103,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param table The table of the association
      * @param column The column of the association
      */
-    protected String selectRelationshipSQL(String table, String column) throws SQLException {
+    public String selectRelationshipSQL(String table, String column) throws SQLException {
         BasicSQLDialect dialect = (BasicSQLDialect) getSQLDialect();
         
         StringBuffer sql = new StringBuffer();
@@ -2143,7 +2147,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param table The table of the association
      * @param column The column of the association
      */
-    protected PreparedStatement selectRelationshipSQLPS(String table, String column, Connection cx) 
+    public PreparedStatement selectRelationshipSQLPS(String table, String column, Connection cx) 
         throws SQLException {
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
         
@@ -2779,7 +2783,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param sort
      *            sort conditions
      */
-    protected String selectSQL(SimpleFeatureType featureType, Query query) throws IOException, SQLException {
+    public String selectSQL(SimpleFeatureType featureType, Query query) throws IOException, SQLException {
         StringBuffer sql = new StringBuffer();
         sql.append("SELECT ");
 
@@ -2907,7 +2911,7 @@ public final class JDBCDataStore extends ContentDataStore
      *            The database connection to be used to create the prepared
      *            statement
      */
-    protected PreparedStatement selectSQLPS( SimpleFeatureType featureType, Query query, Connection cx )
+    public PreparedStatement selectSQLPS( SimpleFeatureType featureType, Query query, Connection cx )
         throws SQLException, IOException {
         
         StringBuffer sql = new StringBuffer();
@@ -2994,7 +2998,6 @@ public final class JDBCDataStore extends ContentDataStore
     protected void setPreparedFilterValues( PreparedStatement ps, PreparedFilterToSQL toSQL, int offset, Connection cx ) 
         throws SQLException {
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
-       
         for ( int i = 0; i < toSQL.getLiteralValues().size(); i++) {
             Object value = toSQL.getLiteralValues().get(i);
             Class binding = toSQL.getLiteralTypes().get(i);
@@ -4184,9 +4187,61 @@ public final class JDBCDataStore extends ContentDataStore
         return tx;
     }
 
+	public FilterToSQL createFilterToSQL(Object featureType) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PrimaryKey getPrimaryKey(Object featureType) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 
 
+	public String selectSQL(Object featureType, Query query)
+			throws IOException, SQLException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public PreparedStatement selectSQLPS(Object featureType, Query query,
+			Connection cx) throws SQLException, IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public ReferencedEnvelope getBounds(Object featureType, Query query,
+			Connection cx) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public int getCount(Object featureType, Query query, Connection cx)
+			throws IOException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public void delete(Object featureType, Filter preFilter, Connection cx)
+			throws IOException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void ensureAuthorization(Object featureType, Filter preFilter,
+			Transaction transaction, Connection cx) throws IOException,
+			SQLException {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void update(Object schema, AttributeDescriptor[] innerTypes,
+			Object[] values, Filter preFilter, Connection cx)
+			throws IOException, SQLException {
+		// TODO Auto-generated method stub
+		
+	}
 
     
 }

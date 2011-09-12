@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -68,7 +69,7 @@ public class SpatiaLiteDataStoreFactory extends JDBCDataStoreFactory {
         return baseDirectory;
     }
     @Override
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new SpatiaLiteDialect( dataStore );
     }
 

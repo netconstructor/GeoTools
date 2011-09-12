@@ -19,6 +19,7 @@ package org.geotools.data.h2;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCLobTestSetup;
 
@@ -30,7 +31,7 @@ public class H2LobTestSetup extends JDBCLobTestSetup {
     }
     
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         dataStore.setDatabaseSchema( null );
     }

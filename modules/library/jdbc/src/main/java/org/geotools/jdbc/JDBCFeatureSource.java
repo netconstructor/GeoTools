@@ -52,16 +52,18 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.CRS;
 import org.geotools.util.logging.Logging;
 import org.opengis.feature.Association;
+import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-public class JDBCFeatureSource extends ContentFeatureSource {
+public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeature> extends ContentFeatureSource implements IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> {
     
     private static final Logger LOGGER = Logging.getLogger(JDBCFeatureSource.class);
 
@@ -87,8 +89,8 @@ public class JDBCFeatureSource extends ContentFeatureSource {
      * @param featureSource jdbc feature source
      * @throws IOException
      */
-    protected JDBCFeatureSource(JDBCFeatureSource featureSource) throws IOException{
-        super(featureSource.entry, featureSource.query);
+    protected JDBCFeatureSource(JDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource) throws IOException{
+        super(featureSource.entry, featureSource.getQuery());
     }
     
     @Override
@@ -104,54 +106,54 @@ public class JDBCFeatureSource extends ContentFeatureSource {
         getDataStore().getSQLDialect().addSupportedHints(hints);
     }
 
-    /**
-     * Type narrow to {@link JDBCDataStore}.
-     */
-    public JDBCDataStore getDataStore() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#getDataStore()
+	 */
+    @Override
+	public JDBCDataStore getDataStore() {
         return (JDBCDataStore) super.getDataStore();
     }
 
-    /**
-     * Type narrow to {@link JDBCState}.
-     */
-    public JDBCState getState() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#getState()
+	 */
+    @Override
+	public JDBCState getState() {
         return (JDBCState) super.getState();
     }
 
-    /**
-     * Returns the primary key of the table backed by feature store.
-     */
-    public PrimaryKey getPrimaryKey() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#getPrimaryKey()
+	 */
+    @Override
+	public PrimaryKey getPrimaryKey() {
         return primaryKey;
     }
     
-    /**
-     * Sets the flag which will expose columns which compose a tables identifying or primary key,
-     * through feature type attributes. 
-     * <p>
-     * Note: setting this flag which affect all feature sources created from or working against 
-     * the current transaction.
-     * </p>
-     */
-    public void setExposePrimaryKeyColumns(boolean exposePrimaryKeyColumns) {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#setExposePrimaryKeyColumns(boolean)
+	 */
+    @Override
+	public void setExposePrimaryKeyColumns(boolean exposePrimaryKeyColumns) {
         ((JDBCState)entry.getState(transaction)).setExposePrimaryKeyColumns(exposePrimaryKeyColumns);
     }
     
-    /**
-     * The flag which will expose columns which compose a tables identifying or primary key,
-     * through feature type attributes.
-     */
-    public boolean isExposePrimaryKeyColumns() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#isExposePrimaryKeyColumns()
+	 */
+    @Override
+	public boolean isExposePrimaryKeyColumns() {
         return ((JDBCState)entry.getState(transaction)).isExposePrimaryKeyColumns();
     }
     
-    /**
-     * Builds the feature type from database metadata.
-     */
-    protected SimpleFeatureType buildFeatureType() throws IOException {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#buildFeatureType()
+	 */
+    @Override
+	public SimpleFeatureType buildFeatureType() throws IOException {
         //grab the primary key
         PrimaryKey pkey = getDataStore().getPrimaryKey(entry);
-        VirtualTable virtualTable = getDataStore().getVirtualTables().get(entry.getTypeName());
+        VirtualTable virtualTable = (VirtualTable) getDataStore().getVirtualTables().get(entry.getTypeName());
         
         SimpleFeatureTypeBuilder tb = new SimpleFeatureTypeBuilder();
         AttributeTypeBuilder ab = new AttributeTypeBuilder();
@@ -213,8 +215,8 @@ public class JDBCFeatureSource extends ContentFeatureSource {
                         }
                     }
                     // in views we don't know the pk type, grab it now
-                    if(pkeycol.type == null) {
-                        pkeycol.type = column.binding;
+                    if(pkeycol.getType() == null) {
+                        pkeycol.setType(column.binding);
                     }
                 }
              
@@ -345,10 +347,11 @@ public class JDBCFeatureSource extends ContentFeatureSource {
         }
     }
 
-    /**
-     * Helper method for splitting a filter.
-     */
-    Filter[] splitFilter(Filter original) {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#splitFilter(org.opengis.filter.Filter)
+	 */
+    @Override
+	public Filter[] splitFilter(Filter original) {
         Filter[] split = new Filter[2];
         if ( original != null ) {
             //create a filter splitter
@@ -427,7 +430,11 @@ public class JDBCFeatureSource extends ContentFeatureSource {
         
     }
     
-    protected ReferencedEnvelope getBoundsInternal(Query query)
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#getBoundsInternal(org.geotools.data.Query)
+	 */
+    @Override
+	public ReferencedEnvelope getBoundsInternal(Query query)
             throws IOException {
         JDBCDataStore dataStore = getDataStore();
 
@@ -486,29 +493,51 @@ public class JDBCFeatureSource extends ContentFeatureSource {
         }
     }
     
-    protected boolean canFilter() {
-        return true;
-    }
-    
-    protected boolean canSort() {
-        return true;
-    }
-    
-    protected boolean canRetype() {
-        return true;
-    }
-    
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#canFilter()
+	 */
     @Override
-    protected boolean canLimit() {
+	public boolean canFilter() {
+        return true;
+    }
+    
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#canSort()
+	 */
+    @Override
+	public boolean canSort() {
+        return true;
+    }
+    
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#canRetype()
+	 */
+    @Override
+	public boolean canRetype() {
+        return true;
+    }
+    
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#canLimit()
+	 */
+    @Override
+	public boolean canLimit() {
         return getDataStore().getSQLDialect().isLimitOffsetSupported();
     }
     
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#canOffset()
+	 */
     @Override
-    protected boolean canOffset() {
+	public boolean canOffset() {
         return getDataStore().getSQLDialect().isLimitOffsetSupported();
     }
     
-    protected  FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query query) throws IOException {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#getReaderInternal(org.geotools.data.Query)
+	 */
+    @Override
+	public  FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query query) throws IOException {
         // split the filter
         Filter[] split = splitFilter(query.getFilter());
         Filter preFilter = split[0];
@@ -588,8 +617,11 @@ public class JDBCFeatureSource extends ContentFeatureSource {
         return reader;
     }
 
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureSource#handleVisitor(org.geotools.data.Query, org.opengis.feature.FeatureVisitor)
+	 */
     @Override
-    protected boolean handleVisitor(Query query, FeatureVisitor visitor) throws IOException {
+	public boolean handleVisitor(Query query, FeatureVisitor visitor) throws IOException {
         //grab connection
         Connection cx = getDataStore().getConnection(getState());
         try {

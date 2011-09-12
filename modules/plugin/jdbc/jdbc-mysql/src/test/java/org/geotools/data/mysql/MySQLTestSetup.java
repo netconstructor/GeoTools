@@ -20,6 +20,7 @@ import java.sql.Connection;
 import java.util.Properties;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCTestSetup;
@@ -88,7 +89,7 @@ public class MySQLTestSetup extends JDBCTestSetup {
     }
     
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         dataStore.setDatabaseSchema(null);
     }
     

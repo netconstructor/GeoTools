@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.jdbc.BasicSQLDialect;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -50,7 +51,7 @@ public class MySQLDialectBasic extends BasicSQLDialect {
     
     MySQLDialect delegate;
     
-    public MySQLDialectBasic(JDBCDataStore dataStore) {
+    public MySQLDialectBasic(IJDBCDataStore dataStore) {
         super( dataStore );
         delegate = new MySQLDialect(dataStore);
     }

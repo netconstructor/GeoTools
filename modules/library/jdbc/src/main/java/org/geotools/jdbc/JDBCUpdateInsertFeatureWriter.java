@@ -24,19 +24,20 @@ import java.util.NoSuchElementException;
 
 import org.geotools.factory.Hints;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 
 public class JDBCUpdateInsertFeatureWriter extends JDBCUpdateFeatureWriter {
 
     JDBCInsertFeatureWriter inserter;
     
     public JDBCUpdateInsertFeatureWriter(String sql, Connection cx,
-            JDBCFeatureSource featureSource, Hints hints) throws SQLException,
+            IJDBCFeatureSource featureSource, Hints hints) throws SQLException,
             IOException {
         super(sql, cx, featureSource, hints);
     }
     
     public JDBCUpdateInsertFeatureWriter(PreparedStatement ps, Connection cx,
-            JDBCFeatureSource featureSource, String[] attributeNames, Hints hints) throws SQLException,
+            IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, String[] attributeNames, Hints hints) throws SQLException,
             IOException {
         super(ps, cx, featureSource, hints);
     }

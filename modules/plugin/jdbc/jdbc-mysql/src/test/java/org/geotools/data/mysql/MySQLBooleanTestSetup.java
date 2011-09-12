@@ -16,6 +16,7 @@
  */
 package org.geotools.data.mysql;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCBooleanTestSetup;
 import org.geotools.jdbc.JDBCDataStore;
 
@@ -27,7 +28,7 @@ public class MySQLBooleanTestSetup extends JDBCBooleanTestSetup {
     }
 
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         dataStore.setDatabaseSchema(null);
     }

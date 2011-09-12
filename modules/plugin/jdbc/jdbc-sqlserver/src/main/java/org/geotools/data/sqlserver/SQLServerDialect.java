@@ -29,6 +29,7 @@ import java.util.Map;
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.BasicSQLDialect;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -55,7 +56,7 @@ import com.vividsolutions.jts.io.WKTReader;
  */
 public class SQLServerDialect extends BasicSQLDialect {
 
-    public SQLServerDialect(JDBCDataStore dataStore) {
+    public SQLServerDialect(IJDBCDataStore dataStore) {
         super(dataStore);
     }
 

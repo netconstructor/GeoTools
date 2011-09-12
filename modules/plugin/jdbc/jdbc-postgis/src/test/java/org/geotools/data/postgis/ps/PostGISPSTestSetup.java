@@ -19,12 +19,13 @@ package org.geotools.data.postgis.ps;
 import org.geotools.data.postgis.PostGISDialect;
 import org.geotools.data.postgis.PostGISPSDialect;
 import org.geotools.data.postgis.PostGISTestSetup;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 
 public class PostGISPSTestSetup extends PostGISTestSetup {
 
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         
         // for this test we need a PS based dialect

@@ -19,6 +19,7 @@ package org.geotools.data.sqlserver;
 import java.io.IOException;
 import java.util.Map;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -39,7 +40,7 @@ public class SQLServerDataStoreFactory extends JDBCDataStoreFactory {
     public static final Param INTSEC = new Param("Integrated Security", Boolean.class, "Login as current windows user account. Works only in windows. Ignores user and password settings.", true, new Boolean(false)); 
     
     @Override
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new SQLServerDialect(dataStore);
     }
 

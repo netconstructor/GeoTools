@@ -35,6 +35,7 @@ import java.util.Map;
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.geometry.jts.Geometries;
 import org.geotools.jdbc.BasicSQLDialect;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -62,7 +63,7 @@ public class SpatiaLiteDialect extends BasicSQLDialect {
 
     public static String SPATIALITE_SPATIAL_INDEX = "org.geotools.data.spatialite.spatialIndex";
     
-    public SpatiaLiteDialect(JDBCDataStore dataStore) {
+    public SpatiaLiteDialect(IJDBCDataStore dataStore) {
         super(dataStore);
     }
 

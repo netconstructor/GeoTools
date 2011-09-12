@@ -25,6 +25,7 @@ import java.sql.Types;
 import java.util.Map;
 
 import org.geotools.jdbc.ColumnMetadata;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
@@ -42,8 +43,8 @@ public class PostGISPSDialect extends PreparedStatementSQLDialect {
     
     private PostGISDialect delegate;
 
-    public PostGISPSDialect(JDBCDataStore store, PostGISDialect delegate) {
-        super(store);
+    public PostGISPSDialect(IJDBCDataStore dataStore, PostGISDialect delegate) {
+        super(dataStore);
         this.delegate = delegate;
     }
     

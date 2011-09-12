@@ -104,7 +104,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
     /**
      * The query defining the feature source
      */
-    protected Query query;
+    private Query query;
     /**
      * cached feature type (only set if this instance is a view)
      */
@@ -128,7 +128,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
      */
     public ContentFeatureSource(ContentEntry entry, Query query) {
         this.entry = entry;
-        this.query = query;
+        this.setQuery(query);
         
         //set up hints
         hints = new HashSet<Hints.Key>();
@@ -199,7 +199,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
      * Indicates if this feature source is actually a view.
      */
     public final boolean isView() {
-        return query != null && query != Query.ALL;
+        return getQuery() != null && getQuery() != Query.ALL;
     }
     /**
      * A default ResourceInfo with a generic description.
@@ -287,10 +287,10 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
         SimpleFeatureType featureType = getAbsoluteSchema();
         
         //this may be a view
-        if ( query != null && query.getPropertyNames() != Query.ALL_NAMES) {
+        if ( getQuery() != null && getQuery().getPropertyNames() != Query.ALL_NAMES) {
             synchronized ( this ) {
                 if ( schema == null ) {
-                    schema = SimpleFeatureTypeBuilder.retype(featureType, query.getPropertyNames() );
+                    schema = SimpleFeatureTypeBuilder.retype(featureType, getQuery().getPropertyNames() );
                 }
             }
             
@@ -878,7 +878,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
 //        }
         
         // join the queries
-        return DataUtilities.mixQueries(this.query, query, null);
+        return DataUtilities.mixQueries(this.getQuery(), query, null);
     }
     
     /**
@@ -1024,4 +1024,16 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
         }
         return queryCapabilities;
     }
+	/**
+	 * @return the query
+	 */
+	public Query getQuery() {
+		return query;
+	}
+	/**
+	 * @param query the query to set
+	 */
+	public void setQuery(Query query) {
+		this.query = query;
+	}
 }

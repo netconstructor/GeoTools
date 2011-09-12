@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -60,7 +61,7 @@ public class PostgisNGDataStoreFactory extends JDBCDataStoreFactory {
     
     
     @Override
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new PostGISDialect(dataStore);
     }
 
@@ -104,7 +105,7 @@ public class PostgisNGDataStoreFactory extends JDBCDataStoreFactory {
         }
     }
     
-    protected JDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
         throws IOException {
         
         // setup loose bbox

@@ -23,6 +23,7 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp.BasicDataSource;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -117,7 +118,7 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
         return "org.h2.Driver";
     }
 
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new H2DialectBasic(dataStore);
         //return new H2DialectPrepared(dataStore);
     }

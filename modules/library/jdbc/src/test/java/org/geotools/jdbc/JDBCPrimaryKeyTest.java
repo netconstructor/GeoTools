@@ -146,7 +146,7 @@ public abstract class JDBCPrimaryKeyTest extends JDBCTestSupport {
     }
 
     public void testNullPrimaryKey() throws Exception {
-        JDBCFeatureSource fs = (JDBCFeatureSource) dataStore.getFeatureSource(tname("nokey"));
+        IJDBCFeatureSource fs = (IJDBCFeatureSource) dataStore.getFeatureSource(tname("nokey"));
         assertFalse( fs instanceof FeatureStore );
     }
     

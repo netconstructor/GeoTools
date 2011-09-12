@@ -32,7 +32,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 public abstract class JDBCTransactionTest extends JDBCTestSupport {
     public void testCommit() throws IOException {
-        JDBCFeatureStore fs = (JDBCFeatureStore) dataStore.getFeatureSource(tname("ft1"));
+        IJDBCFeatureStore fs = (IJDBCFeatureStore) dataStore.getFeatureSource(tname("ft1"));
 
         Transaction tx = new DefaultTransaction();
 
@@ -50,7 +50,7 @@ public abstract class JDBCTransactionTest extends JDBCTestSupport {
     }
 
     public void testNoCommit() throws IOException {
-        JDBCFeatureStore fs = (JDBCFeatureStore) dataStore.getFeatureSource(tname("ft1"));
+        IJDBCFeatureStore fs = (IJDBCFeatureStore) dataStore.getFeatureSource(tname("ft1"));
 
         Transaction tx = new DefaultTransaction();
 
@@ -68,7 +68,7 @@ public abstract class JDBCTransactionTest extends JDBCTestSupport {
     }
 
     public void testConcurrentTransactions() throws IOException {
-        JDBCFeatureStore fs = (JDBCFeatureStore) dataStore.getFeatureSource(tname("ft1"));
+        IJDBCFeatureStore fs = (IJDBCFeatureStore) dataStore.getFeatureSource(tname("ft1"));
 
         Transaction tx1 = new DefaultTransaction();
 

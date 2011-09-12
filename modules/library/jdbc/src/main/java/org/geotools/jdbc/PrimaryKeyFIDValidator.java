@@ -29,9 +29,9 @@ import org.geotools.filter.visitor.SimplifyingFilterVisitor.FIDValidator;
  */
 public class PrimaryKeyFIDValidator implements FIDValidator {
 
-    JDBCFeatureSource featureSource;
+    IJDBCFeatureSource featureSource;
     
-    public PrimaryKeyFIDValidator( JDBCFeatureSource featureSource ) {
+    public PrimaryKeyFIDValidator( IJDBCFeatureSource featureSource ) {
         this.featureSource = featureSource;
     }
     public boolean isValid(String fid) {

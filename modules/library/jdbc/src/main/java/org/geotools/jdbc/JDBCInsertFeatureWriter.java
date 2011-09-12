@@ -21,12 +21,15 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
+import org.geotools.data.FeatureSource;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentState;
 import org.geotools.factory.Hints;
+import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.FeatureType;
 
 public class JDBCInsertFeatureWriter extends JDBCFeatureReader implements FeatureWriter<SimpleFeatureType, SimpleFeature> {
 
@@ -34,12 +37,12 @@ public class JDBCInsertFeatureWriter extends JDBCFeatureReader implements Featur
     ResultSetFeature last;
     
     public JDBCInsertFeatureWriter(String sql, Connection cx,
-            JDBCFeatureSource featureSource, Hints hints) throws SQLException, IOException {
-        super(sql, cx, featureSource, featureSource.getSchema(), hints);
+            IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> delegate, Hints hints) throws SQLException, IOException {
+        super(sql, cx, delegate, delegate.getSchema(), hints);
         last = new ResultSetFeature( rs, cx );
     }
 
-    public JDBCInsertFeatureWriter(PreparedStatement ps, Connection cx, JDBCFeatureSource featureSource, Hints hints)
+    public JDBCInsertFeatureWriter(PreparedStatement ps, Connection cx, IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Hints hints)
         throws SQLException, IOException {
         super( ps, cx, featureSource, featureSource.getSchema(), hints );
         last = new ResultSetFeature( rs, ps.getConnection() );
@@ -50,7 +53,9 @@ public class JDBCInsertFeatureWriter extends JDBCFeatureReader implements Featur
         last = other.last;
     }
 
-    public boolean hasNext() throws IOException {
+
+
+	public boolean hasNext() throws IOException {
         return false;
     }
 

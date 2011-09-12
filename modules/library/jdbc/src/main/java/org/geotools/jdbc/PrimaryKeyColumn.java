@@ -30,11 +30,11 @@ public abstract class PrimaryKeyColumn {
 
     String name;
     
-    Class type;
+    private Class type;
   
     protected PrimaryKeyColumn( String name, Class type ) {
         this.name = name;
-        this.type = type;
+        this.setType(type);
     }
     
     public String getName() {
@@ -44,5 +44,12 @@ public abstract class PrimaryKeyColumn {
     public Class getType() {
         return type;
     }
+
+	/**
+	 * @param type the type to set
+	 */
+	public void setType(Class type) {
+		this.type = type;
+	}
     
 }

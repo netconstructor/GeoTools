@@ -65,14 +65,14 @@ import org.opengis.filter.sort.SortOrder;
  * @author Niels Charlier (Curtin University of Technology)
  *
  */
-public class JoiningJDBCFeatureSource extends JDBCFeatureSource {
+public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureType, SimpleFeature> {
  
     private static final Logger LOGGER = Logging.getLogger(JoiningJDBCFeatureSource.class);
     
     private static final String TEMP_FILTER_ALIAS = "temp_alias_used_for_filter"; 
     public static final String FOREIGN_ID = "FOREIGN_ID" ;
     
-    public JoiningJDBCFeatureSource(JDBCFeatureSource featureSource) throws IOException {     
+    public JoiningJDBCFeatureSource(JDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource) throws IOException {     
         super(featureSource);        
     }
 
@@ -527,7 +527,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource {
         return ps;
     }
     
-    Filter[] splitFilter(Filter original) {
+    public Filter[] splitFilter(Filter original) {
         Filter[] split = new Filter[2];
         if ( original != null ) {
             //create a filter splitter
@@ -620,7 +620,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource {
         return reader;
     }
     
-    protected  FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query query) throws IOException {
+    public  FeatureReader<SimpleFeatureType, SimpleFeature> getReaderInternal(Query query) throws IOException {
         if (query instanceof JoiningQuery) {
             return getJoiningReaderInternal((JoiningQuery) query);
         }
@@ -642,7 +642,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource {
     }
     
     protected Query joinQuery( Query query ) {
-        if (this.query==null) {
+        if (this.getQuery()==null) {
             return query;
         }
         else if (query instanceof JoiningQuery) {            

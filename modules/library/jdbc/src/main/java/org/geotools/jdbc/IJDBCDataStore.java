@@ -1,25 +1,45 @@
 package org.geotools.jdbc;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
+import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
+import org.geotools.data.DefaultQuery;
+import org.geotools.data.GmlObjectStore;
+import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.jdbc.FilterToSQL;
+import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.data.store.ContentEntry;
+import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.factory.Hints;
+import org.geotools.filter.FilterCapabilities;
+import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureVisitor;
+import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 
-public interface IJDBCDataStore extends DataStore {
+public interface IJDBCDataStore  extends  DataStore, GmlObjectStore {
 	
     /**
      * The native SRID associated to a certain descriptor
@@ -62,6 +82,10 @@ public interface IJDBCDataStore extends DataStore {
 	 * @return The data source, never <code>null</code>.
 	 */
 	public DataSource getDataSource();
+	
+	public String[] getTypeNames() throws IOException;
+	
+	public List<Name> createTypeNames() throws IOException;
 
 	/**
 	 * Sets the data source the datastore uses to obtain connections to the underlying
@@ -106,10 +130,76 @@ public interface IJDBCDataStore extends DataStore {
 
 	public PrimaryKeyFinder getPrimaryKeyFinder();
 
+	public String getNamespaceURI();
+
+	public ContentFeatureSource getFeatureSource(String tname,
+			Transaction autoCommit) throws IOException;
+
+    
+    ContentFeatureSource getFeatureSource(String typeName) throws IOException;
+
+    public void setDatabaseSchema(String databaseSchema);
+
+	public Connection createConnection();
+
+	public Transaction buildTransaction(Connection conn);
+
+	public void setAssociations(boolean b);
+
+	public FilterCapabilities getFilterCapabilities();
+
+	public void addVirtualTable(VirtualTable vt) throws IOException;
+
+	public PrimaryKey getPrimaryKey(SimpleFeatureType featureType) throws IOException;
+
+	public Connection getConnection(Transaction autoCommit) throws IOException;
+
+	public Class<?> getMapping(String sqlTypeName);
+
+	public Connection getConnection(JDBCState state) throws IOException;
+
+	public String selectSQL(SimpleFeatureType featureType, Query query) throws IOException, SQLException;
+
+	public PreparedStatement selectSQLPS( SimpleFeatureType featureType, Query query, Connection cx )
+        throws SQLException, IOException;
+
+	public ReferencedEnvelope getBounds(SimpleFeatureType featureType, Query query, Connection cx)
+            throws IOException;
+
+	public void releaseConnection(Connection cx, JDBCState state);
+
+	public int getCount(SimpleFeatureType featureType, Query query, Connection cx)
+	        throws IOException;
+
+	public String selectRelationshipSQL(String tableName, String name) throws SQLException;
+
+	public Statement selectRelationshipSQLPS(String tableName, String name,
+			Connection cx) throws SQLException;
+
+	public boolean isAssociations();
+
+	public void ensureAssociationTablesExist(Connection cx) throws IOException, SQLException;
+
+	public PrimaryKey getPrimaryKey(ContentEntry entry) throws IOException;
+
+	public void delete(SimpleFeatureType featureType, Filter preFilter,
+			Connection cx) throws IOException;
+
+	public void ensureAuthorization(SimpleFeatureType featureType,
+			Filter preFilter, Transaction transaction, Connection cx) throws IOException, SQLException;
+
+	public void update(SimpleFeatureType schema,
+			AttributeDescriptor[] innerTypes, Object[] values,
+			Filter preFilter, Connection cx) throws IOException, SQLException;
+
+	public Object getAggregateValue(FeatureVisitor visitor,
+			SimpleFeatureType featureType, Query query, Connection cx)
+			throws IOException;
 
 
-	 
-	
-	
+
+
+
+
 
 }

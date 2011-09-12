@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.jdbc.BasicSQLDialect;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
@@ -50,7 +51,7 @@ public class H2DialectBasic extends BasicSQLDialect {
 
     H2Dialect delegate;
     
-    public H2DialectBasic(JDBCDataStore dataStore) {
+    public H2DialectBasic(IJDBCDataStore dataStore) {
         super(dataStore);
         
         delegate = new H2Dialect( dataStore );

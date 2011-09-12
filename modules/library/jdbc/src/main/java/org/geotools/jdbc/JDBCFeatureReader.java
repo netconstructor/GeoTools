@@ -94,7 +94,7 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
     /**
      * The feature source the reader originated from. 
      */
-    protected JDBCFeatureSource featureSource;
+    protected IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource;
     /**
      * the datastore
      */
@@ -137,20 +137,20 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
     protected Exception tracer;
     protected String[] columnNames;
     
-    public JDBCFeatureReader( String sql, Connection cx, JDBCFeatureSource featureSource, SimpleFeatureType featureType, Hints hints ) 
+    public JDBCFeatureReader( String sql, Connection cx, IJDBCFeatureSource featureSource2, SimpleFeatureType featureType, Hints hints ) 
         throws SQLException {
-        init( featureSource, featureType, hints );
+        init( featureSource2, featureType, hints );
         
         //create the result set
         this.cx = cx;
         st = cx.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        st.setFetchSize(featureSource.getDataStore().getFetchSize());
+        st.setFetchSize(featureSource2.getDataStore().getFetchSize());
         
-        ((BasicSQLDialect)featureSource.getDataStore().getSQLDialect()).onSelect(st, cx, featureType);
+        ((BasicSQLDialect)featureSource2.getDataStore().getSQLDialect()).onSelect(st, cx, featureType);
         rs = st.executeQuery(sql);
     }
     
-    public JDBCFeatureReader( PreparedStatement st, Connection cx, JDBCFeatureSource featureSource, SimpleFeatureType featureType, Hints hints ) 
+    public JDBCFeatureReader( PreparedStatement st, Connection cx, IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, SimpleFeatureType featureType, Hints hints ) 
         throws SQLException {
             
         init( featureSource, featureType, hints );
@@ -163,7 +163,7 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
         rs = st.executeQuery();
     }
     
-    protected void init( JDBCFeatureSource featureSource, SimpleFeatureType featureType, Hints hints ) {
+    protected void init( IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource2, SimpleFeatureType featureType, Hints hints ) {
         // init the tracer if we need to debug a connection leak
         if(TRACE_ENABLED) {
             tracer = new Exception();
@@ -171,10 +171,10 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
         }
         
         // init base fields
-        this.featureSource = featureSource;
-        this.dataStore = featureSource.getDataStore();
+        this.featureSource = featureSource2;
+        this.dataStore = featureSource2.getDataStore();
         this.featureType = featureType;
-        this.tx = featureSource.getTransaction();
+        this.tx = featureSource2.getTransaction();
         this.hints = hints;
         
         //grab a geometry factory... check for a special hint
@@ -198,7 +198,7 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
         // from the datastore
         FeatureFactory ff = (FeatureFactory) hints.get(Hints.FEATURE_FACTORY);
         if(ff == null)
-            ff = featureSource.getDataStore().getFeatureFactory();
+            ff = featureSource2.getDataStore().getFeatureFactory();
         builder = new SimpleFeatureBuilder(featureType, ff);
         
         // find the primary key
@@ -221,8 +221,10 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
         this.st = other.st;
         this.rs = other.rs;
     }
-    
-    public SimpleFeatureType getFeatureType() {
+
+
+
+	public SimpleFeatureType getFeatureType() {
         return featureType;
     }
 

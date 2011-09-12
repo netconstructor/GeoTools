@@ -93,7 +93,7 @@ public abstract class JDBCTestSetup {
     protected void setUpData() throws Exception {
     }
 
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
     }
 
     public void tearDown() throws Exception {

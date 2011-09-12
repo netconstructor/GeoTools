@@ -2,6 +2,7 @@ package org.geotools.data.db2;
 
 import java.sql.Connection;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCViewTestSetup;
 
@@ -13,7 +14,7 @@ public class DB2ViewTestSetup extends JDBCViewTestSetup {
     }
     
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         
         dataStore.setDatabaseSchema( null );

@@ -66,7 +66,7 @@ public class JDBCClosingFeatureWriter implements FeatureWriter<SimpleFeatureType
         
         if ( w instanceof JDBCFeatureReader ) {
             JDBCFeatureReader jdbcReader = (JDBCFeatureReader) w;
-            JDBCFeatureSource fs = jdbcReader.featureSource;
+            IJDBCFeatureSource fs = jdbcReader.featureSource;
             Connection cx = jdbcReader.cx;
 
             try {

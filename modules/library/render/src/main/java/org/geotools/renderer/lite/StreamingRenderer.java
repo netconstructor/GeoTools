@@ -1066,7 +1066,7 @@ public final class StreamingRenderer implements GTRenderer {
         try {
             CoordinateReferenceSystem crs = getNativeCRS(schema, attributes);
             if(crs != null) {
-                Set<RenderingHints.Key> fsHints = source.getSupportedHints();
+                Set<RenderingHints.Key> fsHints = (Set<Key>) source.getSupportedHints();
                 
                 MathTransform mt = buildFullTransform(crs, mapCRS, worldToScreenTransform);
                 double[] spans = Decimator.computeGeneralizationDistances(mt.inverse(), screenSize, generalizationDistance);

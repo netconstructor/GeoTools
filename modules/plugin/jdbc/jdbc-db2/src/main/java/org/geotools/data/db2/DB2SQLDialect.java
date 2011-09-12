@@ -28,6 +28,7 @@ import java.util.logging.Level;
 
 import org.geotools.factory.Hints;
 import org.geotools.factory.Hints.Key;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.referencing.CRS;
@@ -109,7 +110,7 @@ public class DB2SQLDialect extends SQLDialect  {
     private DB2DialectInfo db2DialectInfo;
     
 
-    public DB2SQLDialect(JDBCDataStore dataStore,DB2DialectInfo info) {
+    public DB2SQLDialect(IJDBCDataStore dataStore,DB2DialectInfo info) {
         super(dataStore);
         db2DialectInfo=info;
     }
@@ -541,7 +542,7 @@ public class DB2SQLDialect extends SQLDialect  {
     }
 
     @Override
-    protected void addSupportedHints(Set<Key> hints) {
+	public void addSupportedHints(Set<Key> hints) {
      
         if (isGeomGeneralizationSupported()) {
             LOGGER.info("GEOMETRY_GENERALIZATION support: YES" );

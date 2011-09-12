@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.geotools.geometry.jts.Geometries;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.SQLDialect;
 import org.geotools.referencing.CRS;
@@ -77,7 +78,7 @@ public class MySQLDialect extends SQLDialect {
     protected String storageEngine;
     
     
-    public MySQLDialect(JDBCDataStore dataStore) {
+    public MySQLDialect(IJDBCDataStore dataStore) {
         super(dataStore);
     }
 

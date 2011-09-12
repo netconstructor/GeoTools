@@ -26,6 +26,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -56,7 +57,7 @@ public class DB2NGDataStoreFactory extends JDBCDataStoreFactory {
     
 	public final static String DriverClassName = "com.ibm.db2.jcc.DB2Driver"; 
 	
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new DB2SQLDialectPrepared(dataStore, new DB2DialectInfo());
     }
 

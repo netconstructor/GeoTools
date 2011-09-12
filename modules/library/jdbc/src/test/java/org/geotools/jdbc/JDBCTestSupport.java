@@ -71,7 +71,7 @@ public abstract class JDBCTestSupport extends OnlineTestCase {
     }
 
     protected JDBCTestSetup setup;
-    protected JDBCDataStore dataStore;
+    protected IJDBCDataStore dataStore;
     protected SQLDialect dialect;
     
     @Override

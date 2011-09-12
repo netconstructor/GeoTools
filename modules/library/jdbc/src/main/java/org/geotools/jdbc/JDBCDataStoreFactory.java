@@ -146,7 +146,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
         }
     }
     
-    public final JDBCDataStore createDataStore(Map params)
+    public final IJDBCDataStore createDataStore(Map params)
         throws IOException {
         JDBCDataStore dataStore = new JDBCDataStore();
         
@@ -237,7 +237,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * @param params THe datastore parameters.
      *
      */
-    protected JDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
         throws IOException {
         return dataStore;
     }
@@ -344,7 +344,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * 
      * @param dataStore The datastore.
      */
-    protected abstract SQLDialect createSQLDialect(JDBCDataStore dataStore);
+    protected abstract SQLDialect createSQLDialect(IJDBCDataStore dataStore);
 
     /**
      * Creates the datasource for the data store.

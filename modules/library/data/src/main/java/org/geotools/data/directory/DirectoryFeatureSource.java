@@ -94,7 +94,7 @@ public class DirectoryFeatureSource implements SimpleFeatureSource {
     }
 
     public Set<Key> getSupportedHints() {
-        return fsource.getSupportedHints();
+        return (Set<Key>) fsource.getSupportedHints();
     }
 
     public void removeFeatureListener(FeatureListener listener) {

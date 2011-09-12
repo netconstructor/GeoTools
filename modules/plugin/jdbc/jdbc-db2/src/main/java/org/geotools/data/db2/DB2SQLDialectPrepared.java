@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.geotools.factory.Hints.Key;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
@@ -41,7 +42,7 @@ public class DB2SQLDialectPrepared extends PreparedStatementSQLDialect {
 
 	private DB2SQLDialect delegate = null;
     
-    public DB2SQLDialectPrepared(JDBCDataStore dataStore, DB2DialectInfo info) {
+    public DB2SQLDialectPrepared(IJDBCDataStore dataStore, DB2DialectInfo info) {
         super(dataStore);
         delegate  = new DB2SQLDialect(dataStore,info);
 
@@ -207,7 +208,7 @@ public class DB2SQLDialectPrepared extends PreparedStatementSQLDialect {
     	delegate.encodeGeometryColumnGeneralized(gatt,srid,sql,distance);
     }
     @Override
-    protected void addSupportedHints(Set<Key> hints) {
+	public void addSupportedHints(Set<Key> hints) {
     	delegate.addSupportedHints(hints);
     }
 

@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import junit.framework.TestCase;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 
@@ -43,7 +44,7 @@ public class SpatiaLiteDataStoreFactoryTest extends TestCase {
     }
     
     public void testCreateDataStore() throws Exception {
-        JDBCDataStore ds = factory.createDataStore( params );
+        IJDBCDataStore ds = factory.createDataStore( params );
         assertNotNull( ds );
     }
 }

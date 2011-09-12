@@ -39,12 +39,15 @@ import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.postgis.PostgisNGDataStoreFactory;
+import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.data.store.ContentFeatureStore;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.feature.visitor.MaxVisitor;
 import org.geotools.feature.visitor.MinVisitor;
 import org.geotools.filter.text.cql2.CQL;
 import org.geotools.filter.text.cql2.CQLException;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.referencing.CRS;
 import org.geotools.util.NullProgressListener;
@@ -124,7 +127,7 @@ public class DataStoreTimeTest{
 		params.put(PostgisNGDataStoreFactory.PASSWD.key,"itttti");
 
 		// create schema
-		final JDBCDataStore datastore = spi.createDataStore(params);
+		final IJDBCDataStore datastore = (JDBCDataStore) spi.createDataStore(params);
 		try{
 			datastore.getSchema(schema.getTypeName());
 		}catch (Exception e) 
@@ -162,11 +165,11 @@ public class DataStoreTimeTest{
 		// max and min
 		DefaultQuery query= new DefaultQuery(datastore.getTypeNames()[0]);//, temporal);
 		final MaxVisitor max = new MaxVisitor("ingestion");
-		datastore.getFeatureSource(datastore.getTypeNames()[0]).accepts(query,max, new NullProgressListener());
+		((ContentFeatureStore) datastore.getFeatureSource(datastore.getTypeNames()[0])).accepts(query,max, new NullProgressListener());
 		System.out.println("max "+max.getResult().toString());
 		
 		final MinVisitor min = new MinVisitor("ingestion");
-		datastore.getFeatureSource(datastore.getTypeNames()[0]).accepts(query,min, new NullProgressListener());
+		((ContentFeatureSource) datastore.getFeatureSource(datastore.getTypeNames()[0])).accepts(query,min, new NullProgressListener());
 		System.out.println("min "+min.getResult().toString());
 		
 		
@@ -174,7 +177,7 @@ public class DataStoreTimeTest{
 		// Max of before
 		final Filter before = CQL.toFilter("ingestion BEFORE 2009-12-05T05:00:00Z");
 		query= new DefaultQuery(datastore.getTypeNames()[0],before);
-		datastore.getFeatureSource(datastore.getTypeNames()[0]).accepts(query,max, new NullProgressListener());
+		((ContentFeatureSource) datastore.getFeatureSource(datastore.getTypeNames()[0])).accepts(query,max, new NullProgressListener());
 		// did we get anything?
 		if(max.getResult().getValue()==null)
 			System.out.println("We got no result for max before");
@@ -183,7 +186,7 @@ public class DataStoreTimeTest{
 		
 		final Filter after = CQL.toFilter("ingestion AFTER 2009-12-01T05:00:00Z");
 		query= new DefaultQuery(datastore.getTypeNames()[0],after);
-		datastore.getFeatureSource(datastore.getTypeNames()[0]).accepts(query,min, new NullProgressListener());
+		((ContentFeatureSource) datastore.getFeatureSource(datastore.getTypeNames()[0])).accepts(query,min, new NullProgressListener());
 		if(min.getResult().getValue()==null)
 			System.out.println("We got no result for min after");
 		else

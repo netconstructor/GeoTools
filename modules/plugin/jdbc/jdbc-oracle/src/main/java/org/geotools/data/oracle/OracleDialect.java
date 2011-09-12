@@ -42,6 +42,7 @@ import org.geotools.data.oracle.sdo.SDOSqlDumper;
 import org.geotools.data.oracle.sdo.TT;
 import org.geotools.factory.Hints;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
@@ -141,7 +142,7 @@ public class OracleDialect extends PreparedStatementSQLDialect {
      */
     Boolean canAccessUserViews;
 
-    public OracleDialect(JDBCDataStore dataStore) {
+    public OracleDialect(IJDBCDataStore dataStore) {
         super(dataStore);
     }
     

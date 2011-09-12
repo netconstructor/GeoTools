@@ -16,6 +16,7 @@
  */
 package org.geotools.data.h2;
 
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCNoPrimaryKeyTestSetup;
 
@@ -26,7 +27,7 @@ public class H2NoPrimaryKeyTestSetup extends JDBCNoPrimaryKeyTestSetup {
     }
     
     @Override
-    protected void setUpDataStore(JDBCDataStore dataStore) {
+    protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         
         dataStore.setDatabaseSchema( null );

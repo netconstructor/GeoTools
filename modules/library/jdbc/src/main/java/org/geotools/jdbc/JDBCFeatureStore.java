@@ -59,7 +59,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  * @source $URL$
  */
-public final class JDBCFeatureStore extends ContentFeatureStore {
+public final class JDBCFeatureStore extends ContentFeatureStore implements IJDBCFeatureStore<SimpleFeatureType, SimpleFeature>  {
     
     private static final Query QUERY_NONE = new DefaultQuery(null, Filter.EXCLUDE); 
     
@@ -67,7 +67,7 @@ public final class JDBCFeatureStore extends ContentFeatureStore {
      * jdbc feature source to delegate to, we do this b/c we can't inherit from
      * both ContentFeatureStore and JDBCFeatureSource at the same time
      */
-    JDBCFeatureSource delegate;
+    JDBCFeatureSource<SimpleFeatureType, SimpleFeature>  delegate;
     
     /**
      * Creates the new feature store.
@@ -77,7 +77,7 @@ public final class JDBCFeatureStore extends ContentFeatureStore {
     public JDBCFeatureStore(ContentEntry entry,Query query) throws IOException {
         super(entry,query);
         
-        delegate = new JDBCFeatureSource( entry, query ) {
+        delegate = new JDBCFeatureSource<SimpleFeatureType, SimpleFeature> ( entry, query ) {
             @Override
             public void setTransaction(Transaction transaction) {
                 super.setTransaction(transaction);
@@ -93,41 +93,65 @@ public final class JDBCFeatureStore extends ContentFeatureStore {
     	hints=Collections.unmodifiableSet(jdbcHints);    	
     }
 
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getDataStore()
+	 */
     @Override
     public JDBCDataStore getDataStore() {
         return delegate.getDataStore();
     }
 
-    @Override
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getEntry()
+	 */
+	@Override
     public ContentEntry getEntry() {
         return delegate.getEntry();
     }
 
-    @Override
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getInfo()
+	 */
+	@Override
     public ResourceInfo getInfo() {
         return delegate.getInfo();
     }
 
-    @Override
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getName()
+	 */
+	@Override
     public Name getName() {
         return delegate.getName();
     }
 
-    @Override
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getQueryCapabilities()
+	 */
+	@Override
     public QueryCapabilities getQueryCapabilities() {
         return delegate.getQueryCapabilities();
     }
 
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getState()
+	 */
     @Override
     public JDBCState getState() {
         return delegate.getState();
     }
 
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getTransaction()
+	 */
     @Override
     public Transaction getTransaction() {
         return delegate.getTransaction();
     }
 
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#setTransaction(org.geotools.data.Transaction)
+	 */
     @Override
     public void setTransaction(Transaction transaction) {
         //JD: note, we need to set both super and delegate transactions.
@@ -139,27 +163,27 @@ public final class JDBCFeatureStore extends ContentFeatureStore {
         }
     }
     
-    public PrimaryKey getPrimaryKey() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#getPrimaryKey()
+	 */
+    @Override
+	public PrimaryKey getPrimaryKey() {
         return delegate.getPrimaryKey();
     }
 
-    /**
-     * Sets the flag which will expose columns which compose a tables identifying or primary key,
-     * through feature type attributes. 
-     * <p>
-     * Note: setting this flag which affect all feature sources created from or working against 
-     * the current transaction.
-     * </p>
-     */
-    public void setExposePrimaryKeyColumns(boolean exposePrimaryKeyColumns) {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#setExposePrimaryKeyColumns(boolean)
+	 */
+    @Override
+	public void setExposePrimaryKeyColumns(boolean exposePrimaryKeyColumns) {
         delegate.setExposePrimaryKeyColumns(exposePrimaryKeyColumns);
     }
     
-    /**
-     * The flag which will expose columns which compose a tables identifying or primary key,
-     * through feature type attributes.
-     */
-    public boolean isExposePrimaryKeyColumns() {
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#isExposePrimaryKeyColumns()
+	 */
+    @Override
+	public boolean isExposePrimaryKeyColumns() {
         return delegate.isExposePrimaryKeyColumns();
     }
     
@@ -311,7 +335,10 @@ public final class JDBCFeatureStore extends ContentFeatureStore {
         return writer;
     }
     
-    @Override
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#modifyFeatures(org.opengis.feature.type.Name[], java.lang.Object[], org.opengis.filter.Filter)
+	 */
+	@Override
     public void modifyFeatures(Name[] names, Object[] values, Filter filter)
             throws IOException {
         
@@ -375,6 +402,9 @@ public final class JDBCFeatureStore extends ContentFeatureStore {
         }
     }
     
+    /* (non-Javadoc)
+	 * @see org.geotools.jdbc.IJDBCFeatureStore#removeFeatures(org.opengis.filter.Filter)
+	 */
     @Override
     public void removeFeatures(Filter filter) throws IOException {
         Filter[] splitted = delegate.splitFilter(filter);

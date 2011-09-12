@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DataAccessFactory.Param;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.SQLDialect;
@@ -45,7 +46,7 @@ public class MySQLDataStoreFactory extends JDBCDataStoreFactory {
     public static final Param STORAGE_ENGINE = 
         new Param("storage engine", String.class, "Storage Engine", false, "MyISAM" );
     
-    protected SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         //return new MySQLDialectPrepared(dataStore);
         return new MySQLDialectBasic(dataStore);
     }
@@ -82,7 +83,7 @@ public class MySQLDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected JDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
             throws IOException {
         String storageEngine = (String) STORAGE_ENGINE.lookUp( params );
         if (storageEngine == null) {

@@ -6,7 +6,7 @@ import org.geotools.jdbc.JDBCTestSetup;
 public class OracleDateTestSetup extends JDBCDateTestSetup {
 
 
-    protected OracleDateTestSetup(JDBCTestSetup delegate) {
+    public OracleDateTestSetup(JDBCTestSetup delegate) {
         super(delegate);
     }
 

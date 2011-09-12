@@ -1017,7 +1017,7 @@ public abstract class SQLDialect {
      *  
      * @param hints
      */
-    protected void addSupportedHints(Set<Hints.Key> hints) {       	
+    public void addSupportedHints(Set<Hints.Key> hints) {       	
     }
     
     /**

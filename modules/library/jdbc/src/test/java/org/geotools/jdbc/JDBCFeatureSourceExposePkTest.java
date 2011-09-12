@@ -30,7 +30,7 @@ public abstract class JDBCFeatureSourceExposePkTest extends JDBCFeatureSourceTes
     @Override
     protected void connect() throws Exception {
         super.connect();
-        ((JDBCFeatureStore) featureSource).setExposePrimaryKeyColumns(true);
+        ((IJDBCFeatureStore) featureSource).setExposePrimaryKeyColumns(true);
     }
 
     public void testSchema() throws Exception {
