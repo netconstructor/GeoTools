@@ -18,7 +18,7 @@ public interface IJDBCFeatureSource<T extends SimpleFeatureType, F extends Simpl
 	/**
 	 * Type narrow to {@link JDBCDataStore}.
 	 */
-	public abstract JDBCDataStore getDataStore();
+	public abstract IJDBCDataStore getDataStore();
 
 	/**
 	 * Type narrow to {@link JDBCState}.

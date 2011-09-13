@@ -92,6 +92,12 @@
       <classifier>tests</classifier>
       <scope>test</scope>
     </dependency>
+     <dependency>
+      <groupId>org.geotools</groupId>
+      <artifactId>gt-sample-data</artifactId>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <!-- TODO: this dependency should appears in wkb4j -->
       <groupId>log4j</groupId>
@@ -99,17 +105,11 @@
       <!-- The version number is specified in the parent POM. -->
       <scope>runtime</scope>
     </dependency>
+    <dependency>
+    	<groupId>org.geotools.jdbc</groupId>
+    	<artifactId>gt-jdbc-postgis</artifactId>
+    	<version>8-SNAPSHOT</version>
+    </dependency>
   </dependencies>
-
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration></configuration>
-      </plugin>
-    </plugins>
-  </build>
-
 </project>
 

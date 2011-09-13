@@ -237,7 +237,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * @param params THe datastore parameters.
      *
      */
-    protected IJDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, Map params)
         throws IOException {
         return dataStore;
     }

@@ -120,7 +120,7 @@ public class TeradataDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected JDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, final Map params)
+    protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, final Map params)
             throws IOException {
 
         // setup loose bbox

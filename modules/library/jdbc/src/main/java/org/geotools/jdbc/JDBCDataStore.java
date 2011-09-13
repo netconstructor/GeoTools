@@ -1339,7 +1339,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Inserts a new feature into the database for a particular feature type / table.
      */
-    protected void insert(SimpleFeature feature, SimpleFeatureType featureType, Connection cx)
+    public void insert(SimpleFeature feature, SimpleFeatureType featureType, Connection cx)
         throws IOException {
         insert(Collections.singletonList(feature), featureType, cx);
     }
@@ -1348,7 +1348,7 @@ public final class JDBCDataStore extends ContentDataStore
      * Inserts a collection of new features into the database for a particular
      * feature type / table.
      */
-    protected void insert(Collection features, SimpleFeatureType featureType, Connection cx)
+    public void insert(Collection<SimpleFeature> features, SimpleFeatureType featureType, Connection cx)
         throws IOException {
         PrimaryKey key = getPrimaryKey(featureType);
 
@@ -1418,7 +1418,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Updates an existing feature(s) in the database for a particular feature type / table.
      */
-    protected void update(SimpleFeatureType featureType, List<AttributeDescriptor> attributes,
+    public void update(SimpleFeatureType featureType, List<AttributeDescriptor> attributes,
         List<Object> values, Filter filter, Connection cx)
         throws IOException, SQLException {
         update(featureType, attributes.toArray(new AttributeDescriptor[attributes.size()]),
@@ -1476,7 +1476,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Deletes an existing feature in the database for a particular feature type / fid.
      */
-    protected void delete(SimpleFeatureType featureType, String fid, Connection cx)
+    public void delete(SimpleFeatureType featureType, String fid, Connection cx)
         throws IOException {
         Filter filter = filterFactory.id(Collections.singleton(filterFactory.featureId(fid)));
         delete(featureType, filter, cx);
@@ -1616,7 +1616,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Encodes a feature id from a primary key and result set values. 
      */
-    protected String encodeFID( PrimaryKey pkey, ResultSet rs ) throws SQLException, IOException {
+    public String encodeFID( PrimaryKey pkey, ResultSet rs ) throws SQLException, IOException {
         // no pk columns
         if(pkey.getColumns().isEmpty()) {
             return SimpleFeatureBuilder.createDefaultFeatureId();
@@ -1650,7 +1650,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param strict If set to true the value of the fid will be validated against
      *   the type of the key columns. If a conversion can not be made, an exception will be thrown. 
      */
-    protected List<Object> decodeFID( PrimaryKey key, String FID, boolean strict) {
+    public List<Object> decodeFID( PrimaryKey key, String FID, boolean strict) {
         //strip off the feature type name
         if (FID.startsWith(key.getTableName() + ".")) {
             FID = FID.substring(key.getTableName().length() + 1);
@@ -2197,7 +2197,7 @@ public final class JDBCDataStore extends ContentDataStore
      * </p>
      * @param fid The feature id of the association
      */
-    protected String selectAssociationSQL(String fid) throws SQLException {
+    public String selectAssociationSQL(String fid) throws SQLException {
         BasicSQLDialect dialect = (BasicSQLDialect) getSQLDialect();
 
         StringBuffer sql = new StringBuffer();
@@ -2232,7 +2232,7 @@ public final class JDBCDataStore extends ContentDataStore
      * </p>
      * @param fid The feature id of the association
      */
-    protected PreparedStatement selectAssociationSQLPS(String fid, Connection cx ) 
+    public PreparedStatement selectAssociationSQLPS(String fid, Connection cx ) 
         throws SQLException {
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
 
@@ -2275,7 +2275,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param gid The geometry id to select for, may be <code>null</code>
      *
      */
-    protected String selectGeometrySQL(String gid) throws SQLException {
+    public String selectGeometrySQL(String gid) throws SQLException {
         
         BasicSQLDialect dialect = (BasicSQLDialect) getSQLDialect();
         
@@ -2313,7 +2313,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param gid The geometry id to select for, may be <code>null</code>
      *
      */
-    protected PreparedStatement selectGeometrySQLPS(String gid,Connection cx) throws SQLException{
+    public PreparedStatement selectGeometrySQLPS(String gid,Connection cx) throws SQLException{
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
         
         StringBuffer sql = new StringBuffer();
@@ -2354,7 +2354,7 @@ public final class JDBCDataStore extends ContentDataStore
      * </p>
      * @param gid The geometry id to select for, may be <code>null</code>.
      */
-    protected String selectMultiGeometrySQL(String gid) throws SQLException {
+    public String selectMultiGeometrySQL(String gid) throws SQLException {
         BasicSQLDialect dialect = (BasicSQLDialect) getSQLDialect();
         
         StringBuffer sql = new StringBuffer();
@@ -2387,7 +2387,7 @@ public final class JDBCDataStore extends ContentDataStore
      * </p>
      * @param gid The geometry id to select for, may be <code>null</code>.
      */
-    protected PreparedStatement selectMultiGeometrySQLPS(String gid, Connection cx)
+    public PreparedStatement selectMultiGeometrySQLPS(String gid, Connection cx)
         throws SQLException {
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
         
@@ -2443,7 +2443,8 @@ public final class JDBCDataStore extends ContentDataStore
      * @param gid The geometry id to select for, may be <code>null</code>
      * @param gname The geometry name to select for, may be <code>null</code>
      */
-    protected String selectGeometryAssociationSQL(String fid, String gid, String gname) throws SQLException {
+    @Override
+    public String selectGeometryAssociationSQL(String fid, String gid, String gname) throws SQLException {
         BasicSQLDialect dialect = (BasicSQLDialect) getSQLDialect();
         
         StringBuffer sql = new StringBuffer();
@@ -2500,7 +2501,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param gid The geometry id to select for, may be <code>null</code>
      * @param gname The geometry name to select for, may be <code>null</code>
      */
-    protected PreparedStatement selectGeometryAssociationSQLPS(String fid, String gid, String gname, Connection cx)
+    public PreparedStatement selectGeometryAssociationSQLPS(String fid, String gid, String gname, Connection cx)
         throws SQLException {
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
         
@@ -3462,7 +3463,7 @@ public final class JDBCDataStore extends ContentDataStore
      * iteration order as the primary key.
      * @param key
      */
-    protected LinkedHashSet<String> getColumnNames(PrimaryKey key) {
+    public LinkedHashSet<String> getColumnNames(PrimaryKey key) {
         LinkedHashSet<String> pkColumnNames = new LinkedHashSet<String>();
         for (PrimaryKeyColumn pkcol : key.getColumns()) {
             pkColumnNames.add(pkcol.getName());
@@ -3942,7 +3943,7 @@ public final class JDBCDataStore extends ContentDataStore
     /**
      * Helper method for setting the gml:id of a geometry as user data.
      */
-    protected void setGmlProperties(Geometry g, String gid, String name, String description) {
+    public void setGmlProperties(Geometry g, String gid, String name, String description) {
         // set up the user data
         Map userData = null;
 

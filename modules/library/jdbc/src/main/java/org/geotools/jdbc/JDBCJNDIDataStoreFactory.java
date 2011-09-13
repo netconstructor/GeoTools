@@ -175,7 +175,7 @@ public abstract class JDBCJNDIDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected IJDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, Map params)
             throws IOException {
         return delegate.createDataStoreInternal(dataStore, params);
     }

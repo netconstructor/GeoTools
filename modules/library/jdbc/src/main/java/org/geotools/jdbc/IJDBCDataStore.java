@@ -8,6 +8,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -27,16 +30,21 @@ import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.factory.Hints;
 import org.geotools.filter.FilterCapabilities;
 import org.geotools.geometry.jts.ReferencedEnvelope;
+import org.geotools.jdbc.JDBCFeatureReader.ResultSetFeature;
 import org.opengis.feature.Feature;
+import org.opengis.feature.FeatureFactory;
 import org.opengis.feature.FeatureVisitor;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.FeatureTypeFactory;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
+import org.opengis.filter.Id;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 public interface IJDBCDataStore  extends  DataStore, GmlObjectStore {
@@ -196,9 +204,53 @@ public interface IJDBCDataStore  extends  DataStore, GmlObjectStore {
 			SimpleFeatureType featureType, Query query, Connection cx)
 			throws IOException;
 
+	public void setPrimaryKeyFinder(PrimaryKeyFinder keyFinder);
+
+	public List<Object> decodeFID(PrimaryKey key, String fid, boolean b);
+
+	public String encodeFID(PrimaryKey key, ResultSet rs) throws SQLException, IOException;
+
+	public LinkedHashSet<String> getColumnNames(PrimaryKey pkey);
+
+	public FeatureFactory getFeatureFactory();
+
+	public FeatureTypeFactory getFeatureTypeFactory();
+
+	public Statement selectAssociationSQLPS(String fid, Connection cx) throws SQLException;
+
+	public void setGmlProperties(Geometry g, String gid, String name, String description);
+
+	public String selectAssociationSQL(String fid) throws SQLException;
+
+	public String selectGeometrySQL(String mgid) throws SQLException;
+
+	public Statement selectGeometrySQLPS(String mgid, Connection cx) throws SQLException;
+
+	public String selectMultiGeometrySQL(String gid) throws SQLException;
+
+	public Statement selectMultiGeometrySQLPS(String gid, Connection cx) throws SQLException;
+
+	public PreparedStatement selectGeometryAssociationSQLPS(String fid, String gid, String gname, Connection cx) throws SQLException;
 
 
+	public String selectGeometryAssociationSQL(String fid, String gid, String gname) throws SQLException;
 
+	public int getFetchSize();
+
+
+	public void insert(SimpleFeature feature, SimpleFeatureType featureType, Connection cx)
+	        throws IOException;
+
+	    public void insert(Collection<SimpleFeature> features, SimpleFeatureType featureType, Connection cx)
+	        throws IOException;
+
+		public void delete(SimpleFeatureType featureType, String id,
+				Connection connection) throws IOException;
+
+	    
+		public void update(SimpleFeatureType featureType, List<AttributeDescriptor> attributes,
+		        List<Object> values, Filter filter, Connection cx)
+		        throws IOException, SQLException;
 
 
 

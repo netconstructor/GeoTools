@@ -83,7 +83,7 @@ public class MySQLDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected IJDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, Map params)
             throws IOException {
         String storageEngine = (String) STORAGE_ENGINE.lookUp( params );
         if (storageEngine == null) {

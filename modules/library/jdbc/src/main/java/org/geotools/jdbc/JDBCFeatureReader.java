@@ -98,7 +98,7 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
     /**
      * the datastore
      */
-    protected JDBCDataStore dataStore;
+    protected IJDBCDataStore dataStore;
     /**
      * schema of features
      */
@@ -137,7 +137,7 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
     protected Exception tracer;
     protected String[] columnNames;
     
-    public JDBCFeatureReader( String sql, Connection cx, IJDBCFeatureSource featureSource2, SimpleFeatureType featureType, Hints hints ) 
+    public JDBCFeatureReader( String sql, Connection cx, IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource2, SimpleFeatureType featureType, Hints hints ) 
         throws SQLException {
         init( featureSource2, featureType, hints );
         

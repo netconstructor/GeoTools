@@ -131,7 +131,7 @@ public class DB2NGDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected JDBCDataStore createDataStoreInternal(JDBCDataStore dataStore, Map params)
+    protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, Map params)
     throws IOException {
     Connection con = null;
     try {    
