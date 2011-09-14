@@ -3,20 +3,25 @@
  */
 package org.geotools.jdbc.versioning.geogit;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.geogit.api.GeoGIT;
+import org.geogit.api.LogOp;
 import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
+import org.geogit.api.RevCommit;
 import org.geogit.repository.StagingArea;
 import org.geogit.repository.Triplet;
 import org.geogit.storage.ObjectWriter;
 import org.geogit.storage.WrappedSerialisingFactory;
 import org.geotools.util.NullProgressListener;
 import org.opengis.feature.Feature;
+import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.Name;
+import org.opengis.filter.Filter;
 import org.opengis.geometry.BoundingBox;
 
 import com.google.common.base.Function;
@@ -125,5 +130,42 @@ public class GeoGITFacade {
 		boolean existed = index.deleted(namespaceURI, localPart, id);
 		return existed;
 	}
+
+    @Override
+    public String toString() {
+		// TODO Auto-generated method stub
+		return ggit.toString();
+	}
+    
+    public void getLog(String fromVersion, String toVersion, FeatureType featureType, Filter filter, int maxRows) throws Exception{
+    	
+    	String[] path = { featureType.getName().getNamespaceURI(), featureType.getName().getLocalPart()};
+    	ObjectId from = null;
+    	ObjectId since = null;
+    	if (fromVersion != null) {
+    		from = ObjectId.valueOf(fromVersion);
+    	}
+    	if (fromVersion != null) {
+    		since = ObjectId.valueOf(toVersion);
+    	}
+
+    	LogOp logOp = ggit.log();
+    	
+    	processFilter(filter, logOp);
+    	Iterator<RevCommit> logs = logOp.setSince(from).setUntil(since).setLimit(maxRows).addPath(path).call();
+    	List<RevCommit> logged = new ArrayList<RevCommit>();
+        for (; logs.hasNext();) {
+            logged.add(logs.next());
+        }
+        
+        
+    }
+
+	private void processFilter(Filter filter, LogOp logOp) {
+		
+		
+	}
+    
+    //public SimpleFeatureCollection getLog(String fromVersion, String toVersion, Filter filter, String[] userIds, int maxRows)
 
 }
