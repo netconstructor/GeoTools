@@ -29,44 +29,31 @@ import org.opengis.filter.Filter;
 @SuppressWarnings("unchecked")
 public class VersionedJDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeature> extends JDBCFeatureSource<SimpleFeatureType, SimpleFeature> implements VersioningFeatureSource<SimpleFeatureType, SimpleFeature> {
 
+	protected final GeoGITFacade ggit;
+	
 	/**
 	 * @param entry
 	 * @param query
+	 * @param geogit
 	 * @throws IOException
 	 */
-	protected final GeoGIT ggit;
-	public VersionedJDBCFeatureSource(ContentEntry entry, Query query, GeoGIT geogit)
+	public VersionedJDBCFeatureSource(ContentEntry entry, Query query, GeoGITFacade geogit)
 			throws IOException {
 		super(entry, query);
 		ggit = geogit;
-		// TODO Auto-generated constructor stub
 	}
 
-	/**
-	 * @param featureSource
-	 * @throws IOException
-	 */
-	public VersionedJDBCFeatureSource(JDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, GeoGIT geogit)
-			throws IOException {
-		super(featureSource.getEntry(), featureSource.getQuery());
-		ggit = geogit;
-	}
 
-/*	public VersionedJDBCFeatureSource(ContentFeatureSource fs) throws IOException {
-		// TODO Auto-generated constructor stub
-		super(fs.getEntry(), fs.getQuery());
-	}*/
-
-	public VersionedJDBCFeatureSource(ContentFeatureSource fs, GeoGIT geogit) throws IOException {
-		// TODO Auto-generated constructor stub
+	public VersionedJDBCFeatureSource(ContentFeatureSource fs, GeoGITFacade geogit) throws IOException {
 		super(fs.getEntry(), fs.getQuery());
 		ggit = geogit;
 	}
 
 	@Override
 	public SimpleFeatureCollection getLog(String fromVersion, String toVersion,
-			Filter filter, String[] userIds, int maxRows) throws IOException {
+			Filter filter, String[] userIds, int maxRows) throws Exception {
 		// TODO Auto-generated method stub
+		ggit.getLog(fromVersion, toVersion, this.buildFeatureType(), filter, maxRows);
 		return null;
 	}
 

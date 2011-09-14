@@ -77,7 +77,7 @@ public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
      */
     protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, Map params)
             throws IOException {
-    		GeoGIT ggit = this.createGeoGIT(params);
+    		GeoGITFacade ggit = this.createGeoGIT(params);
             return new GeoGITWrappingDataStore(ggit, dataStore);
     }
 
@@ -85,7 +85,7 @@ public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
     //public static final Param GG_REPHOME = new Param("repHome", String.class, "repository", true);
     //public static final Param GG_INDEXHOME = new Param("indexHome", String.class, "index", true);
     
-    private GeoGIT createGeoGIT(Map params) throws IOException {
+    private GeoGITFacade createGeoGIT(Map params) throws IOException {
 		
     	final File envHome = new File((String) GG_ENVHOME.lookUp(params));
         final File repositoryHome = new File(envHome, (String) GG_REPHOME.lookUp(params));
@@ -105,7 +105,7 @@ public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
         // repositoryDatabase = new FileSystemRepositoryDatabase(envHome);
 
         Repository repo = new Repository(repositoryDatabase, envHome);
-        return new GeoGIT(repo);
+        return new GeoGITFacade(new GeoGIT(repo));
 	}
 
 	public boolean canProcess(Map params) {

@@ -81,15 +81,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		IJDBCDataStore, GmlObjectStore {
 
-	private GeoGIT geoGIT;
+	private GeoGITFacade geoGIT;
 	private IJDBCDataStore datastore;
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#remoteAddOp()
-	 */
-	public RemoteAddOp remoteAddOp() {
-		return geoGIT.remoteAddOp();
-	}
 
 	/**
 	 * @param keyFinder
@@ -275,12 +268,12 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	}
 
 	/**
-	 * @param geoGIT
+	 * @param ggit
 	 * @param datastore
 	 */
-	public GeoGITWrappingDataStore(GeoGIT geoGIT, IJDBCDataStore datastore) {
+	public GeoGITWrappingDataStore(GeoGITFacade ggit, IJDBCDataStore datastore) {
 		super();
-		this.geoGIT = geoGIT;
+		this.geoGIT = ggit;
 		this.datastore = datastore;
 	}
 
@@ -383,12 +376,12 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 			throws IOException {
 		// TODO Auto-generated method stub
 		ContentFeatureSource fs = super.getFeatureSource(typeName, tx);
-		GeoGIT ggit = getGeoGIT();
+		GeoGITFacade ggit = getGeoGIT();
 		return new VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>(fs, ggit);
 		
 	}
 
-	private GeoGIT getGeoGIT() {
+	private GeoGITFacade getGeoGIT() {
 		// TODO Auto-generated method stub
 		return this.geoGIT;
 	}
@@ -509,66 +502,11 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 
 	/**
 	 * @return
-	 * @see org.geogit.api.GeoGIT#getRepository()
-	 */
-	public Repository getRepository() {
-		return geoGIT.getRepository();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#add()
-	 */
-	public AddOp add() {
-		return geoGIT.add();
-	}
-
-	/**
-	 * @return
 	 * @see java.lang.Object#hashCode()
 	 */
 	@Override
 	public int hashCode() {
 		return geoGIT.hashCode();
-	}
-
-	/**
-	 * @param user
-	 * @param typeName
-	 * @param affectedFeatures
-	 * @param progressListener
-	 * @return
-	 * @see org.geogit.api.GeoGIT#rm(java.lang.String, org.opengis.feature.type.Name, org.geotools.feature.FeatureCollection, org.opengis.util.ProgressListener)
-	 */
-	public String rm(String user, Name typeName,
-			FeatureCollection<SimpleFeatureType, SimpleFeature> affectedFeatures,
-			ProgressListener progressListener) {
-		return geoGIT.rm(user, typeName, affectedFeatures, progressListener);
-	}
-
-	/**
-	 * @param user
-	 * @param typeName
-	 * @param changedProperties
-	 * @param affectedFeatures
-	 * @param progressListener
-	 * @return
-	 * @see org.geogit.api.GeoGIT#update(java.lang.String, org.opengis.feature.type.Name, java.util.List, org.geotools.feature.FeatureCollection, org.opengis.util.ProgressListener)
-	 */
-	public String update(String user, Name typeName,
-			List<PropertyName> changedProperties,
-			FeatureCollection<SimpleFeatureType, SimpleFeature> affectedFeatures,
-			ProgressListener progressListener) {
-		return geoGIT.update(user, typeName, changedProperties,
-				affectedFeatures, progressListener);
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#commit()
-	 */
-	public CommitOp commit() {
-		return geoGIT.commit();
 	}
 
 	/**
@@ -579,126 +517,6 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public boolean equals(Object obj) {
 		return geoGIT.equals(obj);
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#branchCreate()
-	 */
-	public BranchCreateOp branchCreate() {
-		return geoGIT.branchCreate();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#branchDelete()
-	 */
-	public BranchDeleteOp branchDelete() {
-		return geoGIT.branchDelete();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#checkout()
-	 */
-	public CheckoutOp checkout() {
-		return geoGIT.checkout();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#diff()
-	 */
-	public DiffOp diff() {
-		return geoGIT.diff();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#fetch()
-	 */
-	public void fetch() {
-		geoGIT.fetch();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#init()
-	 */
-	public void init() {
-		geoGIT.init();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#log()
-	 */
-	public LogOp log() {
-		return geoGIT.log();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#merge()
-	 */
-	public MergeOp merge() {
-		return geoGIT.merge();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#pull()
-	 */
-	public void pull() {
-		geoGIT.pull();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#push()
-	 */
-	public void push() {
-		geoGIT.push();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#rebase()
-	 */
-	public void rebase() {
-		geoGIT.rebase();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#reset()
-	 */
-	public void reset() {
-		geoGIT.reset();
-	}
-
-	/**
-	 * @return
-	 * @see org.geogit.api.GeoGIT#show()
-	 */
-	public ShowOp show() {
-		return geoGIT.show();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#status()
-	 */
-	public void status() {
-		geoGIT.status();
-	}
-
-	/**
-	 * 
-	 * @see org.geogit.api.GeoGIT#tag()
-	 */
-	public void tag() {
-		geoGIT.tag();
 	}
 
 	/**
@@ -1027,7 +845,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
             schema = new JDBCFeatureSource<SimpleFeatureType, SimpleFeature>(entry, null).buildFeatureType();
             entry.getState(Transaction.AUTO_COMMIT).setFeatureType(schema);
         }
-        GeoGIT ggit = getGeoGIT();
+        GeoGITFacade ggit = getGeoGIT();
 
         Object readOnlyMarker = schema.getUserData().get(JDBC_READ_ONLY);
         if (Boolean.TRUE.equals(readOnlyMarker)) {

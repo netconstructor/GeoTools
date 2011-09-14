@@ -76,10 +76,10 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
      * @param query The defining query.
      */
     @SuppressWarnings("unchecked")
-	public VersionedJDBCFeatureStore(ContentEntry entry,Query query, GeoGIT geogit) throws IOException {
+	public VersionedJDBCFeatureStore(ContentEntry entry,Query query, GeoGITFacade ggit2) throws IOException {
         super(entry,query);
         
-        delegate = new VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>( entry, query, geogit ) {
+        delegate = new VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>( entry, query, ggit2 ) {
             @Override
             public void setTransaction(Transaction transaction) {
                 super.setTransaction(transaction);

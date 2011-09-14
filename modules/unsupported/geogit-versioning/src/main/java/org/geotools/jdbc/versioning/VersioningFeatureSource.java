@@ -43,9 +43,10 @@ public interface VersioningFeatureSource<T extends SimpleFeatureType, F extends 
      *            the maximum number of log rows returned from this call
      * @return a feature collection of the logs, sorted on revision, descending
      * @throws IOException
+     * @throws Exception 
      */
     public SimpleFeatureCollection getLog(String fromVersion, String toVersion, Filter filter,
-            String[] userIds, int maxRows) throws IOException;
+            String[] userIds, int maxRows) throws IOException, Exception;
 
 	void rollback(String toVersion, Filter filter, String[] users)
 			throws IOException;
