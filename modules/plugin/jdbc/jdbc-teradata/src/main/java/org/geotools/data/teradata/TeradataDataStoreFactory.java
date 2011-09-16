@@ -91,7 +91,7 @@ public class TeradataDataStoreFactory extends JDBCDataStoreFactory {
             new HeuristicPrimaryKeyFinder());
 
     @Override
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new TeradataDialect(dataStore);
     }
 
@@ -110,7 +110,7 @@ public class TeradataDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected String getDriverClassName() {
+	public String getDriverClassName() {
         return "com.teradata.jdbc.TeraDriver";
     }
 

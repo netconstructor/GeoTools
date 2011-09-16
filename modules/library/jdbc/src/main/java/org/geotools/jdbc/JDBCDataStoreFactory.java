@@ -246,7 +246,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
         throw new UnsupportedOperationException();
     }
 
-    public final Param[] getParametersInfo() {
+    public Param[] getParametersInfo() {
         LinkedHashMap map = new LinkedHashMap();
         setupParameters(map);
 
@@ -328,7 +328,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * Example: 'postgis'.
      * </p>
      */
-    protected abstract String getDatabaseID();
+    public abstract String getDatabaseID();
 
     /**
      * Returns the fully qualified class name of the jdbc driver.
@@ -336,7 +336,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * For example: org.postgresql.Driver
      * </p>
      */
-    protected abstract String getDriverClassName();
+    public abstract String getDriverClassName();
 
     /**
      * Creates the dialect that the datastore uses for communication with the
@@ -344,7 +344,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * 
      * @param dataStore The datastore.
      */
-    protected abstract SQLDialect createSQLDialect(IJDBCDataStore dataStore);
+    public abstract SQLDialect createSQLDialect(IJDBCDataStore dataStore);
 
     /**
      * Creates the datasource for the data store.

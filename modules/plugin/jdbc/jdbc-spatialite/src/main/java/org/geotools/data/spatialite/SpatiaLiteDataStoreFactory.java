@@ -69,17 +69,17 @@ public class SpatiaLiteDataStoreFactory extends JDBCDataStoreFactory {
         return baseDirectory;
     }
     @Override
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new SpatiaLiteDialect( dataStore );
     }
 
     @Override
-    protected String getDatabaseID() {
+	public String getDatabaseID() {
         return "spatialite";
     }
     
     @Override
-    protected String getDriverClassName() {
+	public String getDriverClassName() {
         return "org.sqlite.JDBC";
     }
     

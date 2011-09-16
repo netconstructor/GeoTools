@@ -56,12 +56,12 @@ public class OracleNGDataStoreFactory extends JDBCDataStoreFactory {
     public static final Param LOOSEBBOX = new Param("Loose bbox", Boolean.class, "Perform only primary filter on bbox", false, Boolean.TRUE);
     
     @Override
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new OracleDialect(dataStore);
     }
 
     @Override
-    protected String getDatabaseID() {
+	public String getDatabaseID() {
         return (String) DBTYPE.sample;
     }
     
@@ -75,7 +75,7 @@ public class OracleNGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getDriverClassName() {
+	public String getDriverClassName() {
         return "oracle.jdbc.driver.OracleDriver";
     }
     

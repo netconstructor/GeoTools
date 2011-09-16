@@ -18,6 +18,7 @@ package org.geotools.jdbc.versioning.geogit;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Properties;
@@ -40,6 +41,7 @@ import org.geotools.data.jdbc.datasource.DataSourceUtil;
 import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.jdbc.SQLDialect;
 
 import com.sleepycat.je.Environment;
 
@@ -49,7 +51,7 @@ import com.sleepycat.je.Environment;
  *
  * @source $URL$
  */
-public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
+public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
     
     /** The logger for the postgis module. */
     protected static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geotools.jdbc.versioning.geogit");
@@ -108,11 +110,9 @@ public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
         return new GeoGITFacade(new GeoGIT(repo));
 	}
 
-	public boolean canProcess(Map params) {
-        return this.dataStoreFactory.canProcess(params);
-    }
 
-    /**
+
+    /*
      * Construct a data store using the params.
      * 
      * @param params
@@ -130,27 +130,12 @@ public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
      * @throws DataSourceException
      *             Thrown if there were any problems creating or connecting the
      *             datasource.
-     */
+     
     public IJDBCDataStore createDataStore(Map params) throws IOException {
     	IJDBCDataStore dataStore = this.dataStoreFactory.createDataStore(params);
     	return  createDataStoreInternal(dataStore, params);
     }
-
-
-    /**
-     * Postgis cannot create a new database.
-     * 
-     * @param params
-     * 
-     * 
-     * @throws IOException
-     *             See UnsupportedOperationException
-     * @throws UnsupportedOperationException
-     *             Cannot create new database
-     */
-    public DataStore createNewDataStore(Map params) throws IOException, UnsupportedOperationException {
-        return (DataStore) this.dataStoreFactory.createDataSource(params);
-    }
+*/
 
     public String getDisplayName() {
         return "DataStore with GeoGIT Versioning backing";
@@ -191,4 +176,28 @@ public class VersionedGeoGITDataStoreFactory extends AbstractDataStoreFactory {
     	  System.arraycopy(dsparams, 0, result, geogitparams.length, dsparams.length);
     	  return result;
     }
+
+	@Override
+	public String getDatabaseID() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getDriverClassName() {
+		// TODO Auto-generated method stub
+		return this.dataStoreFactory.getDriverClassName();
+	}
+
+	@Override
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+		// TODO Auto-generated method stub
+		return this.dataStoreFactory.createSQLDialect(dataStore);
+	}
+
+	@Override
+	public String getValidationQuery() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

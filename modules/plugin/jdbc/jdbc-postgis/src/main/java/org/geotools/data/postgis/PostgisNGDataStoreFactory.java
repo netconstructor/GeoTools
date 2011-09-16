@@ -61,12 +61,12 @@ public class PostgisNGDataStoreFactory extends JDBCDataStoreFactory {
     
     
     @Override
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new PostGISDialect(dataStore);
     }
 
     @Override
-    protected String getDatabaseID() {
+	public String getDatabaseID() {
         return (String) DBTYPE.sample;
     }
     
@@ -80,7 +80,7 @@ public class PostgisNGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getDriverClassName() {
+	public String getDriverClassName() {
         return "org.postgresql.Driver";
     }
     
@@ -146,7 +146,7 @@ public class PostgisNGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         return "select now()";
     }
     

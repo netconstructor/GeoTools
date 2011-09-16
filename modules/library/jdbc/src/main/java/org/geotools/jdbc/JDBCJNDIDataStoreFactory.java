@@ -66,7 +66,7 @@ public abstract class JDBCJNDIDataStoreFactory extends JDBCDataStoreFactory {
      * the driver is not known ahead of time.
      */
     @Override
-    protected String getDriverClassName() {
+	public String getDriverClassName() {
         return null;
     }
 
@@ -75,7 +75,7 @@ public abstract class JDBCJNDIDataStoreFactory extends JDBCDataStoreFactory {
      * not supported, my be part of the external data source configuration
      */
     @Override
-    protected String getValidationQuery() {
+    public String getValidationQuery() {
         return null;
     }
     
@@ -161,7 +161,7 @@ public abstract class JDBCJNDIDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected String getDatabaseID() {
+	public String getDatabaseID() {
         return delegate.getDatabaseID();
     }
 
@@ -189,7 +189,7 @@ public abstract class JDBCJNDIDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return delegate.createSQLDialect(dataStore);
     }
     

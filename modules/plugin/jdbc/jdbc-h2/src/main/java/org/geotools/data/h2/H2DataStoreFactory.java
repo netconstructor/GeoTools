@@ -110,15 +110,15 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
         return "H2 Embedded Database";
     }
 
-    protected String getDatabaseID() {
+    public String getDatabaseID() {
         return (String) DBTYPE.sample;
     }
 
-    protected String getDriverClassName() {
+    public String getDriverClassName() {
         return "org.h2.Driver";
     }
 
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+    public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new H2DialectBasic(dataStore);
         //return new H2DialectPrepared(dataStore);
     }

@@ -46,7 +46,7 @@ public class MySQLDataStoreFactory extends JDBCDataStoreFactory {
     public static final Param STORAGE_ENGINE = 
         new Param("storage engine", String.class, "Storage Engine", false, "MyISAM" );
     
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+    public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         //return new MySQLDialectPrepared(dataStore);
         return new MySQLDialectBasic(dataStore);
     }
@@ -55,11 +55,11 @@ public class MySQLDataStoreFactory extends JDBCDataStoreFactory {
         return "MySQL";
     }
     
-    protected String getDriverClassName() {
+    public String getDriverClassName() {
         return "com.mysql.jdbc.Driver";
     }
 
-    protected String getDatabaseID() {
+    public String getDatabaseID() {
         return (String) DBTYPE.sample;
     }
 

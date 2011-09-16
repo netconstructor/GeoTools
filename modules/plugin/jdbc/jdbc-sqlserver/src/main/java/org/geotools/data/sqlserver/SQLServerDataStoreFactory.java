@@ -40,12 +40,12 @@ public class SQLServerDataStoreFactory extends JDBCDataStoreFactory {
     public static final Param INTSEC = new Param("Integrated Security", Boolean.class, "Login as current windows user account. Works only in windows. Ignores user and password settings.", true, new Boolean(false)); 
     
     @Override
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+	public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new SQLServerDialect(dataStore);
     }
 
     @Override
-    protected String getDatabaseID() {
+	public String getDatabaseID() {
         return (String) DBTYPE.sample;
     }
 
@@ -54,7 +54,7 @@ public class SQLServerDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getDriverClassName() {
+	public String getDriverClassName() {
         return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     }
 

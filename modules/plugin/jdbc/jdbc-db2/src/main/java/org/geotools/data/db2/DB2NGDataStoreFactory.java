@@ -57,7 +57,7 @@ public class DB2NGDataStoreFactory extends JDBCDataStoreFactory {
     
 	public final static String DriverClassName = "com.ibm.db2.jcc.DB2Driver"; 
 	
-    protected SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
+    public SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return new DB2SQLDialectPrepared(dataStore, new DB2DialectInfo());
     }
 
@@ -65,11 +65,11 @@ public class DB2NGDataStoreFactory extends JDBCDataStoreFactory {
         return "DB2 NG";
     }
     
-    protected String getDriverClassName() {
+    public String getDriverClassName() {
         return DriverClassName;
     }
 
-    protected String getDatabaseID() {
+    public String getDatabaseID() {
         return (String) DBTYPE.sample;
     }
 

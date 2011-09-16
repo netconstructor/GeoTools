@@ -237,7 +237,7 @@ public abstract class JDBCTestSetup {
 
     protected abstract JDBCDataStoreFactory createDataStoreFactory();
     
-    protected final SQLDialect createSQLDialect(JDBCDataStore dataStore) {
+    protected final SQLDialect createSQLDialect(IJDBCDataStore dataStore) {
         return null;
     }
     

@@ -17,8 +17,8 @@ import org.geogit.api.Ref;
 import org.geogit.api.RevCommit;
 import org.geogit.repository.StagingArea;
 import org.geogit.repository.Triplet;
+import org.geogit.storage.FeatureWriter;
 import org.geogit.storage.ObjectWriter;
-import org.geogit.storage.WrappedSerialisingFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -75,16 +75,15 @@ public class GeoGITFacade {
 	 * Inserts the feature to the index but does not stages it to be committed
 	 */
 	protected ObjectId insert(Feature f) throws Exception {
-		final StagingArea index = ggit.getRepository().getIndex();
-		Name name = f.getType().getName();
-		String namespaceURI = name.getNamespaceURI();
-		String localPart = name.getLocalPart();
-		String id = f.getIdentifier().getID();
+        final StagingArea index = ggit.getRepository().getIndex();
+        Name name = f.getType().getName();
+        String namespaceURI = name.getNamespaceURI();
+        String localPart = name.getLocalPart();
+        String id = f.getIdentifier().getID();
 
-		Ref ref = index.inserted(WrappedSerialisingFactory.getInstance().createFeatureWriter(f),
-				f.getBounds(), namespaceURI, localPart, id);
-		ObjectId objectId = ref.getObjectId();
-		return objectId;
+        Ref ref = index.inserted(new FeatureWriter(f), f.getBounds(), namespaceURI, localPart, id);
+        ObjectId objectId = ref.getObjectId();
+        return objectId;
 	}
 
 	protected void insertAndAdd(Feature... features) throws Exception {
@@ -94,30 +93,31 @@ public class GeoGITFacade {
 
 	protected void insert(Feature... features) throws Exception {
 
-		final StagingArea index = ggit.getRepository().getIndex();
+		 final StagingArea index = ggit.getRepository().getIndex();
 
-		Iterator<Triplet<ObjectWriter<?>, BoundingBox, List<String>>> iterator;
-		Function<Feature, Triplet<ObjectWriter<?>, BoundingBox, List<String>>> function = new Function<Feature, Triplet<ObjectWriter<?>, BoundingBox, List<String>>>() {
+	        Iterator<Triplet<ObjectWriter<?>, BoundingBox, List<String>>> iterator;
+	        Function<Feature, Triplet<ObjectWriter<?>, BoundingBox, List<String>>> function = new Function<Feature, Triplet<ObjectWriter<?>, BoundingBox, List<String>>>() {
 
-			@Override
-			public Triplet<ObjectWriter<?>, BoundingBox, List<String>> apply(
-					final Feature f) {
-				Name name = f.getType().getName();
-				String namespaceURI = name.getNamespaceURI();
-				String localPart = name.getLocalPart();
-				String id = f.getIdentifier().getID();
+	            @Override
+	            public Triplet<ObjectWriter<?>, BoundingBox, List<String>> apply(final Feature f) {
+	                Name name = f.getType().getName();
+	                String namespaceURI = name.getNamespaceURI();
+	                String localPart = name.getLocalPart();
+	                String id = f.getIdentifier().getID();
 
-                Triplet<ObjectWriter<?>, BoundingBox, List<String>> tuple;
-				ObjectWriter<?> writer = WrappedSerialisingFactory.getInstance().createFeatureWriter(f);
-                BoundingBox bounds = f.getBounds();
-                List<String> path = Arrays.asList(namespaceURI, localPart, id);
-                tuple = new Triplet<ObjectWriter<?>, BoundingBox, List<String>>(writer, bounds,
-                        path);
-                return tuple;
-            }
-        };
-        iterator = Iterators.transform(Iterators.forArray(features), function);
-        index.inserted(iterator, new NullProgressListener(), null);
+	                Triplet<ObjectWriter<?>, BoundingBox, List<String>> tuple;
+	                ObjectWriter<?> writer = new FeatureWriter(f);
+	                BoundingBox bounds = f.getBounds();
+	                List<String> path = Arrays.asList(namespaceURI, localPart, id);
+	                tuple = new Triplet<ObjectWriter<?>, BoundingBox, List<String>>(writer, bounds,
+	                        path);
+	                return tuple;
+	            }
+	        };
+
+	        iterator = Iterators.transform(Iterators.forArray(features), function);
+
+	        index.inserted(iterator, new NullProgressListener(), null);
 
 	}
 

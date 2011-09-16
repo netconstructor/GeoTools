@@ -7,7 +7,12 @@ import org.geotools.jdbc.JDBCTestSetup;
 public class VersionedDataStoreTest extends PostgisDataStoreTest {
 
     @Override
+    protected String getFixtureId() {
+        return "versioned";
+    }
+    
+    @Override
     protected JDBCTestSetup createTestSetup() {
-        return new PostGISTestSetup();
+        return new VersionedTestSetup();
     }
 }
