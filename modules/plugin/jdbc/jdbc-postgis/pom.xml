@@ -80,5 +80,4 @@
       <artifactId>postgresql</artifactId>
     </dependency>
   </dependencies>
-
 </project>
