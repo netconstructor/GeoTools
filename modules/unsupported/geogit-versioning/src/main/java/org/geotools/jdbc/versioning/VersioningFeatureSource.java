@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.jdbc.IJDBCFeatureSource;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -17,7 +18,7 @@ import org.opengis.filter.Filter;
  * @author wdeane
  *
  */
-public interface VersioningFeatureSource<T extends SimpleFeatureType, F extends SimpleFeature> extends FeatureSource<SimpleFeatureType, SimpleFeature> {
+public interface VersioningFeatureSource<T extends SimpleFeatureType, F extends SimpleFeature> extends IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> {
 
     /**
      * Returns a log of changes performed between fromVersion and toVersion
@@ -48,8 +49,7 @@ public interface VersioningFeatureSource<T extends SimpleFeatureType, F extends 
     public SimpleFeatureCollection getLog(String fromVersion, String toVersion, Filter filter,
             String[] userIds, int maxRows) throws IOException, Exception;
 
-	void rollback(String toVersion, Filter filter, String[] users)
-			throws IOException;
+	//void rollback(String toVersion, Filter filter, String[] users) throws IOException;
     
     
 }

@@ -39,6 +39,8 @@ import org.geotools.jdbc.JDBCUpdateFeatureWriter;
 import org.geotools.jdbc.JDBCUpdateInsertFeatureWriter;
 import org.geotools.jdbc.PreparedStatementSQLDialect;
 import org.geotools.jdbc.PrimaryKey;
+import org.geotools.jdbc.VersioningJDBCFeatureSource;
+import org.geotools.jdbc.versioning.VersioningFeatureSource;
 import org.geotools.jdbc.versioning.VersioningFeatureStore;
 import org.opengis.feature.Feature;
 import org.opengis.feature.FeatureVisitor;
@@ -68,7 +70,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
      * jdbc feature source to delegate to, we do this b/c we can't inherit from
      * both ContentFeatureStore and JDBCFeatureSource at the same time
      */
-    IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> delegate;
+    VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature> delegate;
     
     /**
      * Creates the new feature store.
@@ -91,7 +93,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
         
     	Set jdbcHints = new HashSet();      		
     	jdbcHints.addAll(delegate.getSupportedHints());
-    	getVersioningDataStore().getSQLDialect().addSupportedHints(jdbcHints);
+    	getJDBCDataStore().getSQLDialect().addSupportedHints(jdbcHints);
     	hints=Collections.unmodifiableSet(jdbcHints);    	
     }
 
@@ -101,7 +103,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
 	}
 
 
-	public IJDBCDataStore getVersioningDataStore() {
+	public IJDBCDataStore getJDBCDataStore() {
         return delegate.getDataStore();
     }
 
@@ -123,6 +125,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
     @Override
     public QueryCapabilities getQueryCapabilities() {
         return delegate.getQueryCapabilities();
+        
     }
 
     @Override
@@ -249,7 +252,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
         }
         
         //get connection from current state
-        Connection cx = getVersioningDataStore().getConnection(getState());
+        Connection cx = getJDBCDataStore().getConnection(getState());
         
         Filter postFilter;
         //check for update only case
@@ -259,17 +262,17 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
             if ( (flags | WRITER_ADD) == WRITER_ADD ) {
                 DefaultQuery queryNone = new DefaultQuery(query);
                 queryNone.setFilter(Filter.EXCLUDE);
-                if ( getVersioningDataStore().getSQLDialect() instanceof PreparedStatementSQLDialect ) {
-                    PreparedStatement ps = getVersioningDataStore().selectSQLPS(getSchema(), queryNone, cx);
-                    return new JDBCInsertFeatureWriter( ps, cx, delegate, query.getHints() );
+                if ( getJDBCDataStore().getSQLDialect() instanceof PreparedStatementSQLDialect ) {
+                    PreparedStatement ps = getJDBCDataStore().selectSQLPS(getSchema(), queryNone, cx);
+                    return new VersionedJDBCInsertFeatureWriter( ps, cx, delegate, query.getHints() );
                 }
                 else {
                     //build up a statement for the content, inserting only so we dont want
                     // the query to return any data ==> Filter.EXCLUDE
-                    String sql = getVersioningDataStore().selectSQL(getSchema(), queryNone);
-                    getVersioningDataStore().getLogger().fine(sql);
+                    String sql = getJDBCDataStore().selectSQL(getSchema(), queryNone);
+                    getJDBCDataStore().getLogger().fine(sql);
     
-                    return new JDBCInsertFeatureWriter( sql, cx, delegate, query.getHints() );
+                    return new VersionedJDBCInsertFeatureWriter( sql, cx, delegate, query.getHints() );
                 }
             }
             
@@ -281,28 +284,28 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
             // build up a statement for the content
             DefaultQuery preQuery = new DefaultQuery(query);
             preQuery.setFilter(preFilter);
-            if(getVersioningDataStore().getSQLDialect() instanceof PreparedStatementSQLDialect) {
-                PreparedStatement ps = getVersioningDataStore().selectSQLPS(getSchema(), preQuery, cx);
+            if(getJDBCDataStore().getSQLDialect() instanceof PreparedStatementSQLDialect) {
+                PreparedStatement ps = getJDBCDataStore().selectSQLPS(getSchema(), preQuery, cx);
                 if ( (flags | WRITER_UPDATE) == WRITER_UPDATE ) {
                     writer = new JDBCUpdateFeatureWriter(ps, cx, delegate, query.getHints() );
                 } else {
                     //update insert case
-                    writer = new JDBCUpdateInsertFeatureWriter(ps, cx, delegate, query.getPropertyNames(), query.getHints() );
+                    writer = new VersionedJDBCUpdateInsertFeatureWriter(ps, cx, delegate, query.getPropertyNames(), query.getHints() );
                 }
             } else {
-                String sql = getVersioningDataStore().selectSQL(getSchema(), preQuery);
-                getVersioningDataStore().getLogger().fine(sql);
+                String sql = getJDBCDataStore().selectSQL(getSchema(), preQuery);
+                getJDBCDataStore().getLogger().fine(sql);
                 
                 if ( (flags | WRITER_UPDATE) == WRITER_UPDATE ) {
-                    writer = new JDBCUpdateFeatureWriter( sql, cx, delegate, query.getHints() );
+                    writer = new VersionedJDBCUpdateFeatureWriter( sql, cx, delegate, query.getHints() );
                 } else {
                     //update insert case
-                    writer = new JDBCUpdateInsertFeatureWriter( sql, cx, delegate, query.getHints() );
+                    writer = new VersionedJDBCUpdateInsertFeatureWriter( sql, cx, delegate, query.getHints() );
                 }
             }
         } catch (Throwable e) { // NOSONAR
             // close the connection
-            getVersioningDataStore().closeSafe(cx);
+            getJDBCDataStore().closeSafe(cx);
             // safely rethrow
             if (e instanceof Error) {
                 throw (Error) e;
@@ -313,7 +316,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
         
         //check for post filter and wrap accordingly
         if ( postFilter != null && postFilter != Filter.INCLUDE ) {
-            writer = new FilteringFeatureWriter( writer, postFilter );
+            writer = new VersionedFilteringFeatureWriter( writer, postFilter );
         }
         return writer;
     }
@@ -342,12 +345,12 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
             super.modifyFeatures(innerTypes, values, filter);
         } else {
             // let's grab the connection
-            Connection cx = getVersioningDataStore().getConnection(getState());
+            Connection cx = getJDBCDataStore().getConnection(getState());
             
             // we want to support a "batch" update, but we need to be weary of locks
             SimpleFeatureType featureType = getSchema();
              try {
-                getVersioningDataStore().ensureAuthorization(featureType, preFilter, getTransaction(), cx);
+                getJDBCDataStore().ensureAuthorization(featureType, preFilter, getTransaction(), cx);
              }
              catch (SQLException e) {
                  throw (IOException) new IOException().initCause( e );
@@ -362,7 +365,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
                 }
             }
             try {
-                getVersioningDataStore().update(getSchema(), innerTypes, values, preFilter, cx);
+                getJDBCDataStore().update(getSchema(), innerTypes, values, preFilter, cx);
             } catch(SQLException e) {
                 throw (IOException) (new IOException(e.getMessage()).initCause(e));
             }
@@ -394,12 +397,12 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
             super.removeFeatures(filter);
         } else {
             // let's grab the connection
-            Connection cx = getVersioningDataStore().getConnection(getState());
+            Connection cx = getJDBCDataStore().getConnection(getState());
             
             // we want to support a "batch" delete, but we need to be weary of locks
             SimpleFeatureType featureType = getSchema();
             try {
-                getVersioningDataStore().ensureAuthorization(featureType, preFilter, getTransaction(), cx);
+                getJDBCDataStore().ensureAuthorization(featureType, preFilter, getTransaction(), cx);
             } catch (SQLException e) {
             	throw (IOException) new IOException().initCause( e );
 				
@@ -417,7 +420,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
                     bounds = before;
                 }
             }            
-            getVersioningDataStore().delete(featureType, preFilter, cx);
+            getJDBCDataStore().delete(featureType, preFilter, cx);
             if( state.hasListener() ){
                 // issue notification
                 FeatureEvent event = new FeatureEvent(this, Type.REMOVED, bounds, preFilter );
