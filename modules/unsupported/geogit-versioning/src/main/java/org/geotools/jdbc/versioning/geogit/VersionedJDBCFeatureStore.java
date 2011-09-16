@@ -60,6 +60,7 @@ import com.vividsolutions.jts.geom.Geometry;
  *
  */
 
+@SuppressWarnings("unchecked")
 public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends SimpleFeature>  extends ContentFeatureStore implements VersioningFeatureStore<SimpleFeatureType, SimpleFeature> {
     
     @SuppressWarnings("deprecation")

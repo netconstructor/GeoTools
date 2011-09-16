@@ -5,13 +5,10 @@ package org.geotools.jdbc.versioning;
 
 import java.io.IOException;
 
-import org.geotools.data.FeatureSource;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.jdbc.IJDBCFeatureSource;
-import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
-import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
 /**
