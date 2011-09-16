@@ -28,7 +28,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 
 public class JDBCUpdateInsertFeatureWriter extends JDBCUpdateFeatureWriter {
 
-    JDBCInsertFeatureWriter inserter;
+    protected JDBCInsertFeatureWriter inserter;
     
     public JDBCUpdateInsertFeatureWriter(String sql, Connection cx,
             IJDBCFeatureSource featureSource, Hints hints) throws SQLException,

@@ -33,6 +33,14 @@ public class VersionedJDBCFeatureSource<T extends SimpleFeatureType, F extends S
 	protected final GeoGITFacade ggit;
 	
 	/**
+	 * @return the ggit
+	 */
+	public GeoGITFacade getGeoGIT() {
+		return ggit;
+	}
+
+
+	/**
 	 * @param entry
 	 * @param query
 	 * @param geogit
@@ -78,12 +86,12 @@ public class VersionedJDBCFeatureSource<T extends SimpleFeatureType, F extends S
 		return sfc;
 	}
 
-	@Override
+/*	@Override
 	public void rollback(String toVersion, Filter filter, String[] users)
 			throws IOException {
 		// TODO Auto-generated method stub
 		
-	}
+	}*/
 
 
 

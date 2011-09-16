@@ -18,18 +18,6 @@ import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
-import org.geogit.api.AddOp;
-import org.geogit.api.BranchCreateOp;
-import org.geogit.api.BranchDeleteOp;
-import org.geogit.api.CheckoutOp;
-import org.geogit.api.CommitOp;
-import org.geogit.api.DiffOp;
-import org.geogit.api.GeoGIT;
-import org.geogit.api.LogOp;
-import org.geogit.api.MergeOp;
-import org.geogit.api.RemoteAddOp;
-import org.geogit.api.ShowOp;
-import org.geogit.repository.Repository;
 import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureWriter;
@@ -38,16 +26,15 @@ import org.geotools.data.Query;
 import org.geotools.data.ServiceInfo;
 import org.geotools.data.Transaction;
 import org.geotools.data.jdbc.FilterToSQL;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.data.store.ContentState;
 import org.geotools.factory.Hints;
+import org.geotools.filter.FilterCapabilities;
+import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.IJDBCDataStore;
-//import org.geotools.jdbc.JDBCDataStore;
-//import org.geotools.jdbc.JDBCDataStoreFactory;
-//import org.geotools.jdbc.JDBCFeatureSource;
-//import org.geotools.jdbc.JDBCFeatureStore;
 import org.geotools.jdbc.JDBCFeatureSource;
 import org.geotools.jdbc.JDBCState;
 import org.geotools.jdbc.PrimaryKey;
@@ -63,13 +50,7 @@ import org.opengis.feature.type.FeatureTypeFactory;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
-import org.opengis.filter.expression.PropertyName;
 import org.opengis.filter.identity.GmlObjectId;
-import org.opengis.util.ProgressListener;
-import org.geotools.feature.FeatureCollection;
-import org.geotools.filter.FilterCapabilities;
-import org.geotools.geometry.jts.ReferencedEnvelope;
-import org.geotools.data.simple.SimpleFeatureSource;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -78,6 +59,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
  * @author wdeane
  *
  */
+@SuppressWarnings("deprecation")
 public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		IJDBCDataStore, GmlObjectStore {
 
@@ -1084,7 +1066,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	 * @throws IOException
 	 * @see org.geotools.jdbc.IJDBCDataStore#insert(java.util.Collection, org.opengis.feature.simple.SimpleFeatureType, java.sql.Connection)
 	 */
-	public void insert(Collection features, SimpleFeatureType featureType,
+	public void insert(Collection<SimpleFeature> features, SimpleFeatureType featureType,
 			Connection cx) throws IOException {
 		datastore.insert(features, featureType, cx);
 	}

@@ -222,4 +222,8 @@ public class GeoGITFacade {
 		}
 		
 	}
+
+	public void commit() throws Exception {
+		ggit.commit().call();
+	}
 }

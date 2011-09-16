@@ -34,7 +34,7 @@ import org.opengis.feature.type.FeatureType;
 public class JDBCInsertFeatureWriter extends JDBCFeatureReader implements FeatureWriter<SimpleFeatureType, SimpleFeature> {
 
     
-    ResultSetFeature last;
+    protected ResultSetFeature last;
     
     public JDBCInsertFeatureWriter(String sql, Connection cx,
             IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> delegate, Hints hints) throws SQLException, IOException {

@@ -38,8 +38,8 @@ import org.opengis.filter.Id;
 public class JDBCUpdateFeatureWriter extends JDBCFeatureReader implements
         FeatureWriter<SimpleFeatureType, SimpleFeature> {
 
-    ResultSetFeature last;
-    ReferencedEnvelope lastBounds;
+    protected ResultSetFeature last;
+    protected ReferencedEnvelope lastBounds;
     
     public JDBCUpdateFeatureWriter(String sql, Connection cx,
             IJDBCFeatureSource<SimpleFeatureType, SimpleFeature> featureSource, Hints hints) throws SQLException, IOException {
