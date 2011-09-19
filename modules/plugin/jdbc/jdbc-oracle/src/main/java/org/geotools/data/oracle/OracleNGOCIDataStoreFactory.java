@@ -57,7 +57,7 @@ public class OracleNGOCIDataStoreFactory extends OracleNGDataStoreFactory {
     }
 
     @Override
-    protected String getJDBCUrl(Map params) throws IOException {
+	public String getJDBCUrl(Map params) throws IOException {
         String alias = (String) ALIAS.lookUp(params);
         return "jdbc:oracle:oci:@" + alias;
     }

@@ -104,7 +104,7 @@ public class DB2TestSetup extends JDBCTestSetup {
 
 
 	@Override
-	protected void initializeDatabase() throws Exception {
+	public void initializeDatabase() throws Exception {
 		super.initializeDatabase();
 		Connection con = getDataSource().getConnection();
 		DB2TestUtil.enableDB(con);

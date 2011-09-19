@@ -78,7 +78,7 @@ public class DB2NGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         return "select current date from sysibm.sysdummy1";
     }
     
@@ -106,7 +106,7 @@ public class DB2NGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getJDBCUrl(Map params) throws IOException {
+	public String getJDBCUrl(Map params) throws IOException {
         // jdbc url
     	String host=null;
     	Integer port = null;

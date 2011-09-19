@@ -25,7 +25,7 @@ import org.geotools.jdbc.JDBCTestSetup;
 public class PostGISTestSetup extends JDBCTestSetup {
 
     @Override
-    protected void setUpDataStore(IJDBCDataStore dataStore) {
+	protected void setUpDataStore(IJDBCDataStore dataStore) {
         super.setUpDataStore(dataStore);
         
         // the unit tests assume a non loose behaviour
@@ -52,7 +52,7 @@ public class PostGISTestSetup extends JDBCTestSetup {
     }
     
     @Override
-    protected void setUpData() throws Exception {
+	public void setUpData() throws Exception {
         runSafe("DELETE FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'ft1'");
         runSafe("DROP TABLE \"ft1\"");
         runSafe("DROP TABLE \"ft2\"");
@@ -78,7 +78,7 @@ public class PostGISTestSetup extends JDBCTestSetup {
     }
 
     @Override
-    protected JDBCDataStoreFactory createDataStoreFactory() {
+	protected JDBCDataStoreFactory createDataStoreFactory() {
         return new PostgisNGDataStoreFactory();
     }
 

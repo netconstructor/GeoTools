@@ -123,7 +123,7 @@ public class OracleNGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getJDBCUrl(Map params) throws IOException {
+	public String getJDBCUrl(Map params) throws IOException {
     	String db = (String) DATABASE.lookUp(params);    	
       String host = (String) HOST.lookUp(params);        
       Integer port =(Integer) PORT.lookUp(params);
@@ -154,7 +154,7 @@ public class OracleNGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         return "select sysdate from dual";
     }
 }

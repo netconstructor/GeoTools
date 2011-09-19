@@ -88,7 +88,7 @@ public class SpatiaLiteDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         return null;
     }
     
@@ -111,7 +111,7 @@ public class SpatiaLiteDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getJDBCUrl(Map params) throws IOException {
+	public String getJDBCUrl(Map params) throws IOException {
         String db = (String) DATABASE.lookUp(params);
         String location = db;
         if (baseDirectory != null) {

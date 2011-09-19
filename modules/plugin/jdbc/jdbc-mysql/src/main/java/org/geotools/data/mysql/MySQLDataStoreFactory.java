@@ -68,7 +68,7 @@ public class MySQLDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         return "select version()";
     }
     

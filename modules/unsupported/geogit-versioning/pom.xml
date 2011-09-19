@@ -167,6 +167,10 @@
     	<version>8-SNAPSHOT</version>
     	<scope>compile</scope>
     </dependency>
+        <dependency>
+      <groupId>postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+    </dependency>
   </dependencies>
     <build>
     <plugins>

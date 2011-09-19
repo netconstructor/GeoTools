@@ -151,7 +151,7 @@ public class PostgisNGDataStoreFactory extends JDBCDataStoreFactory {
     }
     
     @Override
-    protected String getJDBCUrl(Map params) throws IOException {
+    public String getJDBCUrl(Map params) throws IOException {
         String host = (String) HOST.lookUp(params);
         String db = (String) DATABASE.lookUp(params);
         int port = (Integer) PORT.lookUp(params);

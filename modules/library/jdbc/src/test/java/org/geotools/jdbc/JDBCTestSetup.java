@@ -87,7 +87,7 @@ public abstract class JDBCTestSetup {
         //
     }
 
-    protected void initializeDatabase() throws Exception {
+    public void initializeDatabase() throws Exception {
     }
 
     protected void setUpData() throws Exception {
@@ -200,6 +200,7 @@ public abstract class JDBCTestSetup {
      */
     protected DataSource createDataSource() throws IOException {
         Properties db = fixture;
+        //possible here? for versioned datasource
 
         BasicDataSource dataSource = new BasicDataSource();
         

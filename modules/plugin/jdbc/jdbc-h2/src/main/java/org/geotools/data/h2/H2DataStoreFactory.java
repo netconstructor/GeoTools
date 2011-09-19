@@ -180,7 +180,7 @@ public class H2DataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         // no need for this until we are using H2 embedded, there is no
         // network connection that can fail
         return null;

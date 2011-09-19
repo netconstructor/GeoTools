@@ -33,7 +33,7 @@ public class TeradataTestSetup extends JDBCTestSetup {
         return srid4326;
     }
     @Override
-    protected void initializeDatabase() throws Exception {
+	public void initializeDatabase() throws Exception {
         super.initializeDatabase();
         
         //figure out the 4326 native srid

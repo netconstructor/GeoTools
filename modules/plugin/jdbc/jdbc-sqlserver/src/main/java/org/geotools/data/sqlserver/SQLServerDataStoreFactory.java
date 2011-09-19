@@ -59,7 +59,7 @@ public class SQLServerDataStoreFactory extends JDBCDataStoreFactory {
     }
 
     @Override
-    protected String getValidationQuery() {
+	public String getValidationQuery() {
         // no known way to validate a connection, if you know any, please advise
         return null;
     }
@@ -77,7 +77,7 @@ public class SQLServerDataStoreFactory extends JDBCDataStoreFactory {
      */
     @SuppressWarnings("unchecked")
     @Override
-    protected String getJDBCUrl(Map params) throws IOException {
+	public String getJDBCUrl(Map params) throws IOException {
         String url = super.getJDBCUrl(params);
         String db = (String) DATABASE.lookUp(params);
         Boolean intsec = (Boolean) INTSEC.lookUp(params);

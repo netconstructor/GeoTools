@@ -58,11 +58,11 @@ public class JDBCDelegatingTestSetup extends JDBCTestSetup {
     }
     
     @Override
-    protected void setUpData() throws Exception {
+	protected void setUpData() throws Exception {
         delegate.setUpData();
     }
     
-    protected final void initializeDatabase() throws Exception {
+    public final void initializeDatabase() throws Exception {
         delegate.initializeDatabase();
     }
 
@@ -71,12 +71,12 @@ public class JDBCDelegatingTestSetup extends JDBCTestSetup {
     }
 
     @Override
-    protected JDBCDataStoreFactory createDataStoreFactory() {
+	public JDBCDataStoreFactory createDataStoreFactory() {
         return delegate.createDataStoreFactory();
     }
     
     @Override
-    protected void setUpDataStore(IJDBCDataStore dataStore) {
+	protected void setUpDataStore(IJDBCDataStore dataStore) {
         delegate.setUpDataStore(dataStore);
     }
 

@@ -82,13 +82,9 @@ public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
     		GeoGITFacade ggit = this.createGeoGIT(params);
             return new GeoGITWrappingDataStore(ggit, dataStore);
     }
-
-    //public static final Param GG_ENVHOME = new Param("envHome", String.class, "geogit", true);
-    //public static final Param GG_REPHOME = new Param("repHome", String.class, "repository", true);
-    //public static final Param GG_INDEXHOME = new Param("indexHome", String.class, "index", true);
     
-    private GeoGITFacade createGeoGIT(Map params) throws IOException {
-		
+    private GeoGITFacade createGeoGIT(Map<String, ?> params) throws IOException {
+    	
     	final File envHome = new File((String) GG_ENVHOME.lookUp(params));
         final File repositoryHome = new File(envHome, (String) GG_REPHOME.lookUp(params));
         final File indexHome = new File(envHome,  (String) GG_INDEXHOME.lookUp(params));
@@ -161,26 +157,20 @@ public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
         return this.dataStoreFactory.isAvailable();
     }
 
-    /**
-     * Describe parameters.
-     * 
-     * 
-     * @see org.geotools.data.DataStoreFactorySpi#getParametersInfo()
-     */
-    public Param[] getParametersInfo() {
-    	Param[] geogitparams = new Param[] {
-    			GG_ENVHOME, GG_REPHOME, GG_INDEXHOME
-    	};
-    	Param[] dsparams = this.dataStoreFactory.getParametersInfo();
-    	Param[] result = Arrays.copyOf(geogitparams, geogitparams.length + dsparams.length);
-    	  System.arraycopy(dsparams, 0, result, geogitparams.length, dsparams.length);
-    	  return result;
-    }
 
+    @Override 
+    protected void setupParameters(@SuppressWarnings("rawtypes") Map parameters) {
+        // remember: when adding a new parameter here that is not connection related,
+        // add it to the JDBCJNDIDataStoreFactory class
+        super.setupParameters(parameters);
+        parameters.put(GG_ENVHOME.key, GG_ENVHOME);
+        parameters.put(GG_REPHOME.key, GG_REPHOME);
+        parameters.put(GG_INDEXHOME.key, GG_INDEXHOME);
+    }
+    
 	@Override
 	public String getDatabaseID() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dataStoreFactory.getDatabaseID();
 	}
 
 	@Override
@@ -198,6 +188,11 @@ public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
 	@Override
 	public String getValidationQuery() {
 		// TODO Auto-generated method stub
-		return null;
+		return this.dataStoreFactory.getValidationQuery();
 	}
+	
+    @Override
+    public String getJDBCUrl(Map params) throws IOException {
+        return this.dataStoreFactory.getJDBCUrl(params);
+    }
 }

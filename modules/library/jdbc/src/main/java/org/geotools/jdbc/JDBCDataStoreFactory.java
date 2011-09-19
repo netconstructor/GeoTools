@@ -449,7 +449,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * validation. 
      * @return
      */
-    protected abstract String getValidationQuery();
+    public abstract String getValidationQuery();
 
     /**
      * Builds up the JDBC url in a jdbc:<database>://<host>:<port>/<dbname>
@@ -458,7 +458,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
      * @return
      * @throws IOException
      */
-    protected String getJDBCUrl(Map params) throws IOException {
+    public String getJDBCUrl(Map params) throws IOException {
         // jdbc url
         String host = (String) HOST.lookUp(params);
         Integer port = (Integer) PORT.lookUp(params);
