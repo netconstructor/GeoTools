@@ -45,6 +45,7 @@ import com.vividsolutions.jts.geom.Point;
 
 public abstract class JDBCDataStoreTest extends JDBCTestSupport {
     public void testGetNames() throws IOException {
+    	
         String[] typeNames = dataStore.getTypeNames();
         assertTrue(new HashSet(Arrays.asList(typeNames)).contains(tname("ft1")));
     }

@@ -70,7 +70,7 @@ public class VersionedTestSetup extends PostGISTestSetup {
     public void setUp() throws Exception {
         //
 		super.setUp();
-		/*final File envHome = new File(
+		final File envHome = new File(
 				(String) VersionedGeoGITDataStoreFactory.GG_ENVHOME
 						.lookUp((Map) this.fixture));
 		final File repositoryHome = new File(envHome,
@@ -100,7 +100,7 @@ public class VersionedTestSetup extends PostGISTestSetup {
 
 		repo = new Repository(repositoryDatabase, envHome);
 
-		repo.create();*/
+		repo.create();
     }
 
     /* (non-Javadoc)
