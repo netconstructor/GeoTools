@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.geotools.data.DataStore;
 import org.geotools.data.DefaultServiceInfo;
@@ -177,5 +178,6 @@ public class DirectoryDataStore implements DataStore {
             throw new IOException("Feature type " + typeName + " is unknown");
         return store;
     }
+
 
 }

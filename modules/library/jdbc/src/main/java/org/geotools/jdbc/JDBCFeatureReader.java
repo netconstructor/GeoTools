@@ -703,7 +703,12 @@ public class JDBCFeatureReader implements  FeatureReader<SimpleFeatureType, Simp
             dataStore.closeSafe( rs );
             dataStore.closeSafe( st );
 
-            dataStore.releaseConnection(cx, featureSource.getState() );
+            try {
+				dataStore.releaseConnection(cx, featureSource.getState() );
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         else {
             //means we are already closed... should we throw an exception?

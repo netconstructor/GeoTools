@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.geotools.data.DataStore;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FilteringFeatureReader;
@@ -81,7 +82,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
         super(entry,query);
         
         //TODO: cache this
-        primaryKey = ((JDBCDataStore) entry.getDataStore()).getPrimaryKey(entry);
+        primaryKey = ((IJDBCDataStore) entry.getDataStore()).getPrimaryKey(entry);
     }
     
     /**
@@ -103,15 +104,15 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
         // mark the features as detached, that is, the user can directly alter them
         // without altering the state of the datastore
         hints.add(Hints.FEATURE_DETACHED);
-        getDataStore().getSQLDialect().addSupportedHints(hints);
+        ((IJDBCDataStore) getDataStore()).getSQLDialect().addSupportedHints(hints);
     }
 
     /* (non-Javadoc)
 	 * @see org.geotools.jdbc.IJDBCFeatureSource#getDataStore()
 	 */
     @Override
-	public JDBCDataStore getDataStore() {
-        return (JDBCDataStore) super.getDataStore();
+	public IJDBCDataStore getDataStore() {
+        return  (IJDBCDataStore) super.getDataStore();
     }
 
     /* (non-Javadoc)
@@ -150,7 +151,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
 	 * @see org.geotools.jdbc.IJDBCFeatureSource#buildFeatureType()
 	 */
     @Override
-	public SimpleFeatureType buildFeatureType() throws IOException {
+	public SimpleFeatureType buildFeatureType() throws IOException{
         //grab the primary key
         PrimaryKey pkey = getDataStore().getPrimaryKey(entry);
         VirtualTable virtualTable = (VirtualTable) getDataStore().getVirtualTables().get(entry.getTypeName());
@@ -173,7 +174,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
             tb.setNamespaceURI(entry.getName().getNamespaceURI());
         } else {
             //use the data store
-            tb.setNamespaceURI(getDataStore().getNamespaceURI());
+            tb.setNamespaceURI(((IJDBCDataStore) getDataStore()).getNamespaceURI());
         }
 
         //grab the state
@@ -347,6 +348,12 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
         }
     }
 
+    private List<ColumnMetadata> getColumnMetadata(Connection cx, VirtualTable virtualTable,
+            SQLDialect dialect, IJDBCDataStore dataStore) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
     /* (non-Javadoc)
 	 * @see org.geotools.jdbc.IJDBCFeatureSource#splitFilter(org.opengis.filter.Filter)
 	 */
@@ -372,7 +379,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
     }
 
     protected int getCountInternal(Query query) throws IOException {
-        JDBCDataStore dataStore = getDataStore();
+        IJDBCDataStore dataStore = getDataStore();
 
         //split the filter
         Filter[] split = splitFilter( query.getFilter() );
@@ -436,7 +443,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
     @Override
 	public ReferencedEnvelope getBoundsInternal(Query query)
             throws IOException {
-        JDBCDataStore dataStore = getDataStore();
+        IJDBCDataStore dataStore = getDataStore();
 
         //split the filter
         Filter[] split = splitFilter( query.getFilter() );
@@ -597,7 +604,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
             }
         } catch (Throwable e) { // NOSONAR
             // close the connection
-            getDataStore().closeSafe(cx);
+            ((IJDBCDataStore) getDataStore()).closeSafe(cx);
             // safely rethrow
             if (e instanceof Error) {
                 throw (Error) e;
@@ -623,13 +630,13 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
     @Override
 	public boolean handleVisitor(Query query, FeatureVisitor visitor) throws IOException {
         //grab connection
-        Connection cx = getDataStore().getConnection(getState());
+        Connection cx = ((IJDBCDataStore) getDataStore()).getConnection(getState());
         try {
-            Object result = getDataStore().getAggregateValue(visitor, getSchema(), query, cx);
+            Object result = ((IJDBCDataStore) getDataStore()).getAggregateValue(visitor, getSchema(), query, cx);
             return result != null;
         }
         finally {
-            getDataStore().closeSafe( cx );
+            ((IJDBCDataStore) getDataStore()).closeSafe( cx );
         }
     }
     
@@ -690,7 +697,7 @@ public class JDBCFeatureSource<T extends SimpleFeatureType, F extends SimpleFeat
                 result.add(column);
             }
         } finally {
-            getDataStore().closeSafe(columns);
+            ((IJDBCDataStore) getDataStore()).closeSafe(columns);
         }
 
         return result;

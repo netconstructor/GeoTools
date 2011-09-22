@@ -94,7 +94,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
         
         public String encode(String s) {
            StringBuffer buf = new StringBuffer();
-           getDataStore().dialect.encodeTableName(tableName, buf);           
+           getDataStore().getSQLDialect().encodeTableName(tableName, buf);           
            buf.append(".");
            buf.append(s);
            return buf.toString();
@@ -116,7 +116,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
         getDataStore().encodeGeometryColumn(gatt, temp , hints);
         
         StringBuffer originalColumnName = new StringBuffer();
-        getDataStore().dialect.encodeColumnName(gatt.getLocalName(), originalColumnName);
+        getDataStore().getSQLDialect().encodeColumnName(gatt.getLocalName(), originalColumnName);
         
         StringBuffer replaceColumnName = new StringBuffer();
         encodeColumnName(gatt.getLocalName(), typeName, replaceColumnName, hints);
@@ -225,7 +225,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
         
         getDataStore().encodeTableName(typeName, sql, hints);                
         sql.append(".");
-        getDataStore().dialect.encodeColumnName(colName, sql);
+        getDataStore().getSQLDialect().encodeColumnName(colName, sql);
         
     }
     
@@ -240,9 +240,9 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
      */
     public void encodeColumnName2(String colName, String typeName, StringBuffer sql, Hints hints) throws SQLException{
         
-        getDataStore().dialect.encodeTableName(typeName, sql);                
+        getDataStore().getSQLDialect().encodeTableName(typeName, sql);                
         sql.append(".");
-        getDataStore().dialect.encodeColumnName(colName, sql);
+        getDataStore().getSQLDialect().encodeColumnName(colName, sql);
         
     }
     
@@ -405,7 +405,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
                 encodeGeometryColumn((GeometryDescriptor) att, featureType.getTypeName(), sql, query.getHints());
 
                 //alias it to be the name of the original geometry
-                getDataStore().dialect.encodeColumnAlias(columnName, sql);
+                getDataStore().getSQLDialect().encodeColumnAlias(columnName, sql);
             } else {
                 encodeColumnName(columnName, featureType.getTypeName(), sql, query.getHints());
                 
@@ -454,7 +454,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
                     
                     sql.append(" INNER JOIN ( SELECT DISTINCT ");
                     for (int i=0; i < lastSortBy.length; i++) {
-                         getDataStore().dialect.encodeColumnName(lastSortBy[i].getPropertyName().getPropertyName(), sql);
+                        getDataStore().getSQLDialect().encodeColumnName(lastSortBy[i].getPropertyName().getPropertyName(), sql);
                          if (i < lastSortBy.length-1) sql.append(",");
                     }
                     sql.append(" FROM ");
@@ -518,7 +518,7 @@ public class JoiningJDBCFeatureSource extends JDBCFeatureSource<SimpleFeatureTyp
 
         LOGGER.fine( sql );
         PreparedStatement ps = cx.prepareStatement(sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-        ps.setFetchSize(getDataStore().fetchSize);
+        ps.setFetchSize(getDataStore().getFetchSize());
         
         if ( toSQLref.get() != null ) {
             getDataStore().setPreparedFilterValues( ps, toSQLref.get(), 0, cx );

@@ -19,10 +19,14 @@ public class VersionedDataStoreTest extends PostgisDataStoreTest {
         return "versioned";
     }*/
 
-    VersionedTestSetup setup;
+    @Override
+    protected String getFixtureId() {
+        return ((VersionedTestSetup)createTestSetup()).createDataStoreFactory().getDatabaseID() + "versioned";
+    }
+    
 
     @Override
-    protected VersionedTestSetup createTestSetup() {
+    protected JDBCTestSetup createTestSetup() {
         return new VersionedTestSetup();
         
     }
@@ -31,29 +35,38 @@ public class VersionedDataStoreTest extends PostgisDataStoreTest {
    @Override
     protected void connect() throws Exception {
         //create the test harness
+
         if (setup == null) {
             setup = createTestSetup();
         }
+        VersionedTestSetup vsetup = (VersionedTestSetup) setup;
 
-        setup.setFixture(fixture);
-        setup.setUp();
+        vsetup.setFixture(fixture);
+        vsetup.setUp();
 
         //initialize the database
-        setup.initializeDatabase();
+        vsetup.initializeDatabase();
 
         //initialize the data
-       setup.setUpData();
+        vsetup.setUpData();
+        
+        HashMap params = new HashMap();
+        params.put( JDBCDataStoreFactory.NAMESPACE.key, "http://www.geotools.org/test" );
+        //params.put( JDBCDataStoreFactory.SCHEMA.key, "geotools" );
+        params.put( JDBCDataStoreFactory.DATASOURCE.key, setup.getDataSource() );
+        params.putAll(fixture);
 
-       VersionedGeoGITDataStoreFactory factory = setup.createDataStoreFactory();
-        dataStore = factory.createDataStore( fixture );
+       VersionedGeoGITDataStoreFactory factory = vsetup.createDataStoreFactory();
+        dataStore = factory.createDataStore( params );
         
         //setup.setUpDataStore(dataStore);
         dialect = dataStore.getSQLDialect();
     }
+   
 
    @Override
    protected boolean isOnline() throws Exception {
-	   VersionedTestSetup setup = createTestSetup();
+	   VersionedTestSetup setup = (VersionedTestSetup) createTestSetup();
        setup.setFixture(fixture);
        
        try {
@@ -74,8 +87,4 @@ public class VersionedDataStoreTest extends PostgisDataStoreTest {
            }
        }
    }
-   
-
-    
-    
 }

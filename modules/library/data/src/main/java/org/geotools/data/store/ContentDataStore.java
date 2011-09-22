@@ -347,7 +347,7 @@ public abstract class ContentDataStore implements DataStore {
      */
     public ContentFeatureSource getFeatureSource(String typeName)
         throws IOException {
-        return getFeatureSource(new NameImpl(namespaceURI,typeName), Transaction.AUTO_COMMIT);
+        return getFeatureSource(new NameImpl(this.getNamespaceURI(),typeName), Transaction.AUTO_COMMIT);
     }
 
     /**

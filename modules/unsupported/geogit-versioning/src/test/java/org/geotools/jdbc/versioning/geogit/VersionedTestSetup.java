@@ -16,6 +16,7 @@ import org.geogit.repository.Repository;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
 import org.geogit.storage.bdbje.JERepositoryDatabase;
+import org.geogit.storage.fs.FileSystemRepositoryDatabase;
 import org.geotools.data.jdbc.datasource.DBCPDataSource;
 import org.geotools.data.postgis.PostGISTestSetup;
 import org.geotools.jdbc.IJDBCDataStore;
@@ -80,27 +81,30 @@ public class VersionedTestSetup extends PostGISTestSetup {
 				(String) VersionedGeoGITDataStoreFactory.GG_INDEXHOME
 						.lookUp((Map) this.fixture));
 
-		FileUtils.deleteDirectory(envHome);
-		repositoryHome.mkdirs();
-		indexHome.mkdirs();
-		EntityStoreConfig config = new EntityStoreConfig();
-		config.setCacheMemoryPercentAllowed(50);
-		EnvironmentBuilder esb = new EnvironmentBuilder(config);
-		Properties bdbEnvProperties = null;
-		Environment environment;
-		environment = esb.buildEnvironment(repositoryHome, bdbEnvProperties);
+	try {
+            FileUtils.deleteDirectory(envHome);
+            repositoryHome.mkdirs();
+            indexHome.mkdirs();
+            EntityStoreConfig config = new EntityStoreConfig();
+            config.setCacheMemoryPercentAllowed(50);
+            EnvironmentBuilder esb = new EnvironmentBuilder(config);
+            Properties bdbEnvProperties = null;
+            Environment environment;
+            environment = esb.buildEnvironment(repositoryHome, bdbEnvProperties);
 
-		Environment stagingEnvironment;
-		stagingEnvironment = esb.buildEnvironment(indexHome, bdbEnvProperties);
+            Environment stagingEnvironment;
+            stagingEnvironment = esb.buildEnvironment(indexHome, bdbEnvProperties);
 
-		repositoryDatabase = new JERepositoryDatabase(environment,
-				stagingEnvironment);
+            repositoryDatabase = new JERepositoryDatabase(environment,
+            		stagingEnvironment);
+            
 
-		// repositoryDatabase = new FileSystemRepositoryDatabase(envHome);
 
-		repo = new Repository(repositoryDatabase, envHome);
+            repo = new Repository(repositoryDatabase, envHome);
 
-		repo.create();
+            repo.create();
+        } catch (Exception e) {
+        }
     }
 
     /* (non-Javadoc)
@@ -110,9 +114,7 @@ public class VersionedTestSetup extends PostGISTestSetup {
 	public void tearDown() throws Exception {
 		// TODO Auto-generated method stub
 		super.tearDown();
-        if (repo != null) {
-            repo.close();
-        }
+
         
 	}
 

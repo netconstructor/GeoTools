@@ -17,8 +17,8 @@ import org.geogit.api.Ref;
 import org.geogit.api.RevCommit;
 import org.geogit.repository.StagingArea;
 import org.geogit.repository.Triplet;
-import org.geogit.storage.FeatureWriter;
 import org.geogit.storage.ObjectWriter;
+import org.geogit.storage.WrappedSerialisingFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
@@ -81,7 +81,8 @@ public class GeoGITFacade {
         String localPart = name.getLocalPart();
         String id = f.getIdentifier().getID();
 
-        Ref ref = index.inserted(new FeatureWriter(f), f.getBounds(), namespaceURI, localPart, id);
+        Ref ref = index.inserted(
+        		WrappedSerialisingFactory.getInstance().createFeatureWriter(f), f.getBounds(), namespaceURI, localPart, id);
         ObjectId objectId = ref.getObjectId();
         return objectId;
 	}
@@ -89,6 +90,10 @@ public class GeoGITFacade {
 	protected void insertAndAdd(Feature... features) throws Exception {
 		insert(features);
 		ggit.add().call();
+	}
+	
+	protected void close() throws Exception {
+		//ggit.getRepository().close();
 	}
 
 	protected void insert(Feature... features) throws Exception {
@@ -106,7 +111,7 @@ public class GeoGITFacade {
 	                String id = f.getIdentifier().getID();
 
 	                Triplet<ObjectWriter<?>, BoundingBox, List<String>> tuple;
-	                ObjectWriter<?> writer = new FeatureWriter(f);
+	                ObjectWriter<?> writer = WrappedSerialisingFactory.getInstance().createFeatureWriter(f);
 	                BoundingBox bounds = f.getBounds();
 	                List<String> path = Arrays.asList(namespaceURI, localPart, id);
 	                tuple = new Triplet<ObjectWriter<?>, BoundingBox, List<String>>(writer, bounds,

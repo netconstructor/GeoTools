@@ -125,7 +125,7 @@ public final class ContentEntry {
      * @return The state for the transaction.
      */
     public ContentState getState(Transaction transaction) {
-        if (state.containsKey(transaction)) {
+        if (state.containsKey(transaction)) {//AutoCommitTransaction
             return state.get(transaction);
         } else {
             ContentState auto = state.get(Transaction.AUTO_COMMIT);

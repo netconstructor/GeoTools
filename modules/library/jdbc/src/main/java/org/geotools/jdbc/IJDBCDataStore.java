@@ -1,6 +1,7 @@
 package org.geotools.jdbc;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -19,6 +20,7 @@ import javax.sql.DataSource;
 
 import org.geotools.data.DataAccess;
 import org.geotools.data.DataStore;
+import org.geotools.data.DataStoreFactorySpi;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.GmlObjectStore;
 import org.geotools.data.Query;
@@ -27,6 +29,7 @@ import org.geotools.data.jdbc.FilterToSQL;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.data.store.ContentState;
 import org.geotools.factory.Hints;
 import org.geotools.filter.FilterCapabilities;
 import org.geotools.geometry.jts.ReferencedEnvelope;
@@ -39,6 +42,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.feature.type.FeatureTypeFactory;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -65,6 +69,7 @@ public interface IJDBCDataStore  extends  DataStore, GmlObjectStore {
      * type.
      */
     public static final String JDBC_NATIVE_TYPENAME = "org.geotools.jdbc.nativeTypeName";
+
     
 
 	/**
@@ -251,6 +256,40 @@ public interface IJDBCDataStore  extends  DataStore, GmlObjectStore {
 		public void update(SimpleFeatureType featureType, List<AttributeDescriptor> attributes,
 		        List<Object> values, Filter filter, Connection cx)
 		        throws IOException, SQLException;
+
+        public void encodeGeometryColumn(GeometryDescriptor gatt, StringBuffer temp, Hints hints);
+
+        public FilterToSQL createPreparedFilterToSQL(SimpleFeatureType ft);
+
+        public void applyLimitOffset(StringBuffer sql, Query  query);
+
+        public void setPreparedFilterValues(PreparedStatement ps,
+                PreparedFilterToSQL preparedFilterToSQL, int i, Connection cx) throws SQLException;
+
+        public void setDataStoreFactory( JDBCDataStoreFactory dataStoreFactory);
+
+        public void setFeatureTypeFactory(FeatureTypeFactory typeFactory);
+
+        public void setFeatureFactory(FeatureFactory featureFactory);
+
+        public void setFilterFactory(FilterFactory filterFactory);
+
+        public void setGeometryFactory(GeometryFactory geometryFactory);
+
+        public DataStoreFactorySpi getDataStoreFactory();
+
+        public void setDataStoreFactory(DataStoreFactorySpi dataStoreFactory);
+
+        public void setNamespaceURI(String namespaceURI);
+
+        public ContentEntry getEntry(Name name);
+
+        public ContentState createContentState(ContentEntry entry);
+
+
+
+		
+		
 
 
 

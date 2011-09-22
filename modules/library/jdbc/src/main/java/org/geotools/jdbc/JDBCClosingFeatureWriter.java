@@ -73,7 +73,12 @@ public class JDBCClosingFeatureWriter implements FeatureWriter<SimpleFeatureType
                 writer.close();
             }
             finally {
-                fs.getDataStore().releaseConnection( cx, fs.getState() );
+                try {
+					fs.getDataStore().releaseConnection( cx, fs.getState() );
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
             }
         }
     }

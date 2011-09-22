@@ -2,6 +2,7 @@ package org.geotools.jdbc;
 
 import java.io.IOException;
 
+import org.geotools.data.DataStore;
 import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;

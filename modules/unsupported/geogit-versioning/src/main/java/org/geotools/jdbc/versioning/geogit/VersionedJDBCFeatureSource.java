@@ -7,6 +7,7 @@ import java.io.IOException;
 
 import org.geogit.api.GeoGIT;
 import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
@@ -18,6 +19,7 @@ import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 
 
@@ -56,9 +58,13 @@ public class VersionedJDBCFeatureSource<T extends SimpleFeatureType, F extends S
 	public VersionedJDBCFeatureSource(ContentFeatureSource fs, GeoGITFacade geogit) throws IOException {
 		super(fs.getEntry(), fs.getQuery());
 		ggit = geogit;
+		
+		
 	}
 
-	@Override
+
+
+    @Override
 	public SimpleFeatureCollection getLog(String fromVersion, String toVersion,
 			Filter filter, String[] userIds, int maxRows) throws Exception {
 		// TODO Sanitise Filter

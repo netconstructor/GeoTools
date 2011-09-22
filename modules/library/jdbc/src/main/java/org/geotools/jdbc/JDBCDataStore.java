@@ -767,7 +767,7 @@ public final class JDBCDataStore extends ContentDataStore
      *
      * @see ContentDataStore#createContentState(ContentEntry)
      */
-    protected ContentState createContentState(ContentEntry entry) {
+    public ContentState createContentState(ContentEntry entry) {
         JDBCState state = new JDBCState(entry);
         state.setExposePrimaryKeyColumns(exposePrimaryKeyColumns);
         return state;
@@ -2996,7 +2996,7 @@ public final class JDBCDataStore extends ContentDataStore
      * Helper method for setting the values of the WHERE class of a prepared statement.
      * 
      */
-    protected void setPreparedFilterValues( PreparedStatement ps, PreparedFilterToSQL toSQL, int offset, Connection cx ) 
+    public void setPreparedFilterValues( PreparedStatement ps, PreparedFilterToSQL toSQL, int offset, Connection cx ) 
         throws SQLException {
         PreparedStatementSQLDialect dialect = (PreparedStatementSQLDialect) getSQLDialect();
         for ( int i = 0; i < toSQL.getLiteralValues().size(); i++) {
@@ -3832,7 +3832,7 @@ public final class JDBCDataStore extends ContentDataStore
      * used in a prepared statement.
      * 
      */
-    protected PreparedFilterToSQL createPreparedFilterToSQL (SimpleFeatureType featureType) {
+    public PreparedFilterToSQL createPreparedFilterToSQL (SimpleFeatureType featureType) {
         return initializeFilterToSQL( ((PreparedStatementSQLDialect)dialect).createPreparedFilterToSQL(), featureType );
     }
     
@@ -3979,7 +3979,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param sql The sql to be modified
      * @param the query that holds the limit and offset parameters
      */
-    void applyLimitOffset(StringBuffer sql, Query query) {
+    public void applyLimitOffset(StringBuffer sql, Query query) {
         if(checkLimitOffset(query)) {
             final Integer offset = query.getStartIndex();
             final int limit = query.getMaxFeatures();
@@ -4148,7 +4148,7 @@ public final class JDBCDataStore extends ContentDataStore
      * @param sql
      * @param hints , may be null 
      */
-    protected void encodeGeometryColumn(GeometryDescriptor gatt, StringBuffer sql,Hints hints) {
+    public void encodeGeometryColumn(GeometryDescriptor gatt, StringBuffer sql,Hints hints) {
     	
     	int srid = getDescriptorSRID(gatt);
     	if (isGeneralizationRequired(hints, gatt)==true) {
@@ -4243,6 +4243,12 @@ public final class JDBCDataStore extends ContentDataStore
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public void setDataStoreFactory(JDBCDataStoreFactory dataStoreFactory) {
+        this.dataStoreFactory = dataStoreFactory;
+        
+    }
 
     
 }

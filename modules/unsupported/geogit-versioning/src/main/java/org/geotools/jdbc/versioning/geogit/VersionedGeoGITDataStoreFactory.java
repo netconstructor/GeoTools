@@ -38,12 +38,18 @@ import org.geotools.data.DataSourceException;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataAccessFactory.Param;
 import org.geotools.data.jdbc.datasource.DataSourceUtil;
+import org.geotools.factory.CommonFactoryFinder;
+import org.geotools.feature.type.FeatureTypeFactoryImpl;
+import org.geotools.jdbc.CompositePrimaryKeyFinder;
+import org.geotools.jdbc.HeuristicPrimaryKeyFinder;
 import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.JDBCDataStore;
 import org.geotools.jdbc.JDBCDataStoreFactory;
+import org.geotools.jdbc.MetadataTablePrimaryKeyFinder;
 import org.geotools.jdbc.SQLDialect;
 
 import com.sleepycat.je.Environment;
+import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
  * Builds instances of the Versioned JDBC/GeoGIT wrapper
@@ -80,6 +86,7 @@ public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
     protected IJDBCDataStore createDataStoreInternal(IJDBCDataStore dataStore, Map params)
             throws IOException {
     		GeoGITFacade ggit = this.createGeoGIT(params);
+    		dataStore.setDataStoreFactory(this);
             return new GeoGITWrappingDataStore(ggit, dataStore);
     }
     
@@ -132,6 +139,7 @@ public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
     	return  createDataStoreInternal(dataStore, params);
     }
 */
+
 
     public String getDisplayName() {
         return "DataStore with GeoGIT Versioning backing";

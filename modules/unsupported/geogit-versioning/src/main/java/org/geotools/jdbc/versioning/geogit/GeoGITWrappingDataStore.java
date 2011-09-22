@@ -30,13 +30,18 @@ import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.data.store.ContentDataStore;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureSource;
+import org.geotools.data.store.ContentFeatureStore;
 import org.geotools.data.store.ContentState;
 import org.geotools.factory.Hints;
+import org.geotools.feature.FeatureCollection;
+import org.geotools.feature.NameImpl;
 import org.geotools.filter.FilterCapabilities;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.jdbc.IJDBCDataStore;
+import org.geotools.jdbc.JDBCDataStoreFactory;
 import org.geotools.jdbc.JDBCFeatureSource;
 import org.geotools.jdbc.JDBCState;
+import org.geotools.jdbc.PreparedFilterToSQL;
 import org.geotools.jdbc.PrimaryKey;
 import org.geotools.jdbc.PrimaryKeyFinder;
 import org.geotools.jdbc.SQLDialect;
@@ -47,6 +52,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
 import org.opengis.feature.type.FeatureTypeFactory;
+import org.opengis.feature.type.GeometryDescriptor;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
@@ -63,7 +69,59 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		IJDBCDataStore, GmlObjectStore {
 
-	private GeoGITFacade geoGIT;
+	/**
+     * @param typeName
+     * @return
+     * @throws IOException
+     * @see org.geotools.data.DataStore#getFeatureSource(org.opengis.feature.type.Name)
+     */
+    public SimpleFeatureSource getFeatureSource(Name typeName) throws IOException {
+        return datastore.getFeatureSource(typeName);
+    }
+
+
+    /**
+     * @param gatt
+     * @param temp
+     * @param hints
+     * @see org.geotools.jdbc.IJDBCDataStore#encodeGeometryColumn(org.opengis.feature.type.GeometryDescriptor, java.lang.StringBuffer, org.geotools.factory.Hints)
+     */
+    public void encodeGeometryColumn(GeometryDescriptor gatt, StringBuffer temp, Hints hints) {
+        datastore.encodeGeometryColumn(gatt, temp, hints);
+    }
+
+    /**
+     * @param ft
+     * @return
+     * @see org.geotools.jdbc.IJDBCDataStore#createPreparedFilterToSQL(org.opengis.feature.simple.SimpleFeatureType)
+     */
+    public FilterToSQL createPreparedFilterToSQL(SimpleFeatureType ft) {
+        return datastore.createPreparedFilterToSQL(ft);
+    }
+
+    /**
+     * @param sql
+     * @param query
+     * @see org.geotools.jdbc.IJDBCDataStore#applyLimitOffset(java.lang.StringBuffer, org.geotools.data.Query)
+     */
+    public void applyLimitOffset(StringBuffer sql, Query query) {
+        datastore.applyLimitOffset(sql, query);
+    }
+
+    /**
+     * @param ps
+     * @param preparedFilterToSQL
+     * @param i
+     * @param cx
+     * @throws SQLException
+     * @see org.geotools.jdbc.IJDBCDataStore#setPreparedFilterValues(java.sql.PreparedStatement, org.geotools.jdbc.PreparedFilterToSQL, int, java.sql.Connection)
+     */
+    public void setPreparedFilterValues(PreparedStatement ps,
+            PreparedFilterToSQL preparedFilterToSQL, int i, Connection cx) throws SQLException {
+        datastore.setPreparedFilterValues(ps, preparedFilterToSQL, i, cx);
+    }
+
+    private GeoGITFacade geoGIT;
 	private IJDBCDataStore datastore;
 
 	/**
@@ -161,9 +219,12 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	 * @see org.geotools.jdbc.IJDBCDataStore#releaseConnection(java.sql.Connection, org.geotools.jdbc.JDBCState)
 	 */
 	@Override
-	public void releaseConnection(Connection cx, JDBCState state) {
+	public void releaseConnection(Connection cx, JDBCState state)
+	{
 		datastore.releaseConnection(cx, state);
+
 	}
+	
 
 	/**
 	 * @param featureType
@@ -237,6 +298,8 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	public PrimaryKey getPrimaryKey(ContentEntry entry) throws IOException {
 		return datastore.getPrimaryKey(entry);
 	}
+	
+	
 
 	/**
 	 * @param autoCommit
@@ -257,6 +320,8 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		super();
 		this.geoGIT = ggit;
 		this.datastore = datastore;
+		this.namespaceURI = this.datastore.getNamespaceURI();
+		
 	}
 
 	/**
@@ -275,7 +340,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public FeatureTypeFactory getFeatureTypeFactory() {
 		// TODO Auto-generated method stub
-		return super.getFeatureTypeFactory();
+		return datastore.getFeatureTypeFactory();
 	}
 
 	/* (non-Javadoc)
@@ -284,7 +349,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setFeatureTypeFactory(FeatureTypeFactory typeFactory) {
 		// TODO Auto-generated method stub
-		super.setFeatureTypeFactory(typeFactory);
+	    datastore.setFeatureTypeFactory(typeFactory);
 	}
 
 	/* (non-Javadoc)
@@ -293,7 +358,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setFeatureFactory(FeatureFactory featureFactory) {
 		// TODO Auto-generated method stub
-		super.setFeatureFactory(featureFactory);
+	    datastore.setFeatureFactory(featureFactory);
 	}
 
 	/* (non-Javadoc)
@@ -302,7 +367,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public FeatureFactory getFeatureFactory() {
 		// TODO Auto-generated method stub
-		return super.getFeatureFactory();
+		return datastore.getFeatureFactory();
 	}
 
 	/* (non-Javadoc)
@@ -311,7 +376,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setFilterFactory(FilterFactory filterFactory) {
 		// TODO Auto-generated method stub
-		super.setFilterFactory(filterFactory);
+	    datastore.setFilterFactory(filterFactory);
 	}
 
 	/* (non-Javadoc)
@@ -320,7 +385,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setGeometryFactory(GeometryFactory geometryFactory) {
 		// TODO Auto-generated method stub
-		super.setGeometryFactory(geometryFactory);
+	    datastore.setGeometryFactory(geometryFactory);
 	}
 
 	/* (non-Javadoc)
@@ -329,7 +394,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public DataStoreFactorySpi getDataStoreFactory() {
 		// TODO Auto-generated method stub
-		return super.getDataStoreFactory();
+		return datastore.getDataStoreFactory();
 	}
 
 	/* (non-Javadoc)
@@ -338,7 +403,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setDataStoreFactory(DataStoreFactorySpi dataStoreFactory) {
 		// TODO Auto-generated method stub
-		super.setDataStoreFactory(dataStoreFactory);
+	    datastore.setDataStoreFactory(dataStoreFactory);
 	}
 
 	/* (non-Javadoc)
@@ -347,7 +412,8 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setNamespaceURI(String namespaceURI) {
 		// TODO Auto-generated method stub
-		super.setNamespaceURI(namespaceURI);
+	    datastore.setNamespaceURI(namespaceURI);
+	    this.namespaceURI = namespaceURI;
 	}
 
 	/* (non-Javadoc)
@@ -356,10 +422,11 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public ContentFeatureSource getFeatureSource(Name typeName, Transaction tx)
 			throws IOException {
+	    //super.getFeatureSource(typeName, tx);
 		// TODO Auto-generated method stub
 		ContentFeatureSource fs = super.getFeatureSource(typeName, tx);
-		GeoGITFacade ggit = getGeoGIT();
-		return new VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>(fs, ggit);
+		//GeoGITFacade ggit = getGeoGIT();
+		return fs;
 		
 	}
 
@@ -374,29 +441,18 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public ContentEntry getEntry(Name name) {
 		// TODO Auto-generated method stub
-		return super.getEntry(name);
+		return datastore.getEntry(name);
 	}
 
 	/* (non-Javadoc)
 	 * @see org.geotools.data.store.ContentDataStore#createContentState(org.geotools.data.store.ContentEntry)
 	 */
 	@Override
-	protected ContentState createContentState(ContentEntry entry) {
+	public ContentState createContentState(ContentEntry entry) {
 		// TODO Auto-generated method stub
-		return super.createContentState(entry);
+		return datastore.createContentState(entry);
 	}
 
-	/**
-	 * @param typeName
-	 * @return
-	 * @throws IOException
-	 * @see org.geotools.jdbc.IJDBCDataStore#getFeatureSource(java.lang.String)
-	 */
-	@Override
-	public ContentFeatureSource getFeatureSource(String typeName)
-			throws IOException {
-		return datastore.getFeatureSource(typeName);
-	}
 
 	/**
 	 * @param databaseSchema
@@ -405,6 +461,9 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public void setDatabaseSchema(String databaseSchema) {
 		datastore.setDatabaseSchema(databaseSchema);
+
+		
+		
 	}
 
 	/**
@@ -546,6 +605,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	 */
 	@Override
 	public DataSource getDataSource() {
+		new GeoGITWrappingDataStore(geoGIT, datastore);
 		return datastore.getDataSource();
 	}
 
@@ -588,6 +648,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	@Override
 	public boolean isView(DatabaseMetaData metaData, String databaseSchema,
 			String tableName) throws SQLException {
+	   
 		return datastore.isView(metaData, databaseSchema, tableName);
 	}
 
@@ -710,17 +771,6 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		return datastore.getPrimaryKeyFinder();
 	}
 
-	/**
-	 * @param typeName
-	 * @return
-	 * @throws IOException
-	 * @see org.geotools.data.DataStore#getFeatureSource(org.opengis.feature.type.Name)
-	 */
-	@Override
-	public SimpleFeatureSource getFeatureSource(Name typeName)
-			throws IOException {
-		return datastore.getFeatureSource(typeName);
-	}
 
 	/**
 	 * @return
@@ -788,7 +838,9 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	public FeatureWriter<SimpleFeatureType, SimpleFeature> getFeatureWriter(
 			String typeName, Filter filter, Transaction transaction)
 			throws IOException {
-		return datastore.getFeatureWriter(typeName, filter, transaction);
+	        
+            ContentFeatureStore featureStore = ensureFeatureStore(typeName,transaction);
+            return featureStore.getWriter( filter , WRITER_UPDATE | WRITER_ADD );
 	}
 
 	/**
@@ -808,7 +860,14 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	 */
 	@Override
 	public void dispose() {
+	    
 		datastore.dispose();
+		try {
+			if (this.geoGIT != null)this.geoGIT.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		super.dispose();
 	}
 
 
@@ -821,13 +880,14 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	protected ContentFeatureSource createFeatureSource(ContentEntry entry) throws IOException {
         // grab the schema, it carries a flag telling us if the feature type is read only
         SimpleFeatureType schema = entry.getState(Transaction.AUTO_COMMIT).getFeatureType();
+        GeoGITFacade ggit = getGeoGIT();
         if (schema == null) {
             // if the schema still haven't been computed, force its computation so
             // that we can decide if the feature type is read only
-            schema = new JDBCFeatureSource<SimpleFeatureType, SimpleFeature>(entry, null).buildFeatureType();
+            schema = new VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>(entry, null, geoGIT).buildFeatureType();
             entry.getState(Transaction.AUTO_COMMIT).setFeatureType(schema);
         }
-        GeoGITFacade ggit = getGeoGIT();
+
 
         Object readOnlyMarker = schema.getUserData().get(JDBC_READ_ONLY);
         if (Boolean.TRUE.equals(readOnlyMarker)) {
@@ -842,18 +902,6 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		return this.datastore.createTypeNames();
 	}
 
-	/**
-	 * @param tname
-	 * @param autoCommit
-	 * @return
-	 * @throws IOException
-	 * @see org.geotools.jdbc.IJDBCDataStore#getFeatureSource(java.lang.String, org.geotools.data.Transaction)
-	 */
-	@Override
-	public ContentFeatureSource getFeatureSource(String tname,
-			Transaction autoCommit) throws IOException {
-		return datastore.getFeatureSource(tname, autoCommit);
-	}
 
 	/**
 	 * @param featureType
@@ -1098,6 +1146,13 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 			Filter filter, Connection cx) throws IOException, SQLException {
 		datastore.update(featureType, attributes, values, filter, cx);
 	}
+
+
+    @Override
+    public void setDataStoreFactory(JDBCDataStoreFactory dataStoreFactory) {
+        this.dataStoreFactory = dataStoreFactory;
+        
+    }
 
 
 }

@@ -107,9 +107,8 @@ public class VersionedJDBCUpdateInsertFeatureWriter extends
             PrimaryKey key = dataStore.getPrimaryKey(featureType);
             String fid = dataStore.encodeFID(key, rs);
 
-            Id filter = dataStore.getFilterFactory()
-                                 .id(Collections.singleton(dataStore.getFilterFactory()
-                                                                    .featureId(fid)));
+            Id filter = dataStore.getFilterFactory().id(Collections.singleton(dataStore.getFilterFactory().featureId(fid)));
+            
 
             //figure out which attributes changed
             List<AttributeDescriptor> changed = new ArrayList<AttributeDescriptor>();
@@ -124,8 +123,9 @@ public class VersionedJDBCUpdateInsertFeatureWriter extends
 
             // do the write
             dataStore.update(featureType, changed, values, filter, st.getConnection());
-            ggit.insertAndAdd(last);
-            ggit.commit();
+            
+            //ggit.insertAndAdd(last);
+            //ggit.commit();
             // issue notification
             ContentEntry entry = featureSource.getEntry();
             ContentState state = entry.getState( this.tx );

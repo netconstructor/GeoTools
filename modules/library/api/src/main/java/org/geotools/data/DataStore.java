@@ -17,6 +17,7 @@
 package org.geotools.data;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -222,5 +223,7 @@ public interface DataStore extends DataAccess<SimpleFeatureType, SimpleFeature>{
      *         is handled by the {@code DataStore} in a different fashion
      */
     LockingManager getLockingManager();
+
+
 
 }

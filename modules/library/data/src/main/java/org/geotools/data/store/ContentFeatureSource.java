@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.geotools.data.DataStore;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.Query;
 import org.geotools.data.FeatureListener;
@@ -191,7 +192,7 @@ public abstract class ContentFeatureSource implements SimpleFeatureSource {
      * return type.
      * </p>
      */
-    public ContentDataStore getDataStore() {
+    public DataStore getDataStore() {
         return entry.getDataStore();
     }
 

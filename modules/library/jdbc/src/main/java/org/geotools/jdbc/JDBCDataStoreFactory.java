@@ -146,7 +146,7 @@ public abstract class JDBCDataStoreFactory extends AbstractDataStoreFactory {
         }
     }
     
-    public final IJDBCDataStore createDataStore(Map params)
+    public IJDBCDataStore createDataStore(Map params)
         throws IOException {
         JDBCDataStore dataStore = new JDBCDataStore();
         

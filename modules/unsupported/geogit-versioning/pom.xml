@@ -145,6 +145,13 @@
       <!-- The version number is specified in the parent POM. -->
       <scope>test</scope>
     </dependency>
+        <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <!-- The version number is specified in the parent POM. -->
+      <scope>test</scope>
+    </dependency>
+    
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>

@@ -452,7 +452,7 @@ public abstract class ContentFeatureStore extends ContentFeatureSource implement
      * Locks features specified by a filter.
      */
     public final int lockFeatures(Filter filter) throws IOException {
-        Logger logger = getDataStore().getLogger();
+        //Logger logger = getDataStore().getLogger();
         
         String typeName = getSchema().getTypeName(); 
         
@@ -465,15 +465,15 @@ public abstract class ContentFeatureStore extends ContentFeatureSource implement
                     getDataStore().getLockingManager()
                         .lockFeatureID(typeName, feature.getID(), transaction, lock);
                     
-                    logger.fine( "Locked feature: " + feature.getID() );
+                    //logger.fine( "Locked feature: " + feature.getID() );
                     locked++;
                 }
                 catch( FeatureLockException e ) {
                     //ignore
                     String msg = "Unable to lock feature:" + feature.getID() + "." + 
                         " Change logging to FINEST for stack trace";
-                    logger.fine( msg );
-                    logger.log( Level.FINEST, "Unable to lock feature: " + feature.getID(), e );
+                    //logger.fine( msg );
+                    //logger.log( Level.FINEST, "Unable to lock feature: " + feature.getID(), e );
                 }
             }
             

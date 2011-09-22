@@ -65,7 +65,7 @@ public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends Si
     
     @SuppressWarnings("deprecation")
 	private static final Query QUERY_NONE = new DefaultQuery(null, Filter.EXCLUDE); 
-    private GeoGIT ggit;
+    private GeoGITFacade ggit;
     
     /**
      * jdbc feature source to delegate to, we do this b/c we can't inherit from

@@ -97,7 +97,7 @@ public final class JDBCFeatureStore extends ContentFeatureStore implements IJDBC
 	 * @see org.geotools.jdbc.IJDBCFeatureStore#getDataStore()
 	 */
     @Override
-    public JDBCDataStore getDataStore() {
+    public IJDBCDataStore getDataStore() {
         return delegate.getDataStore();
     }
 
