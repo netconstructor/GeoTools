@@ -110,9 +110,9 @@ public class VersionedGeoGITDataStoreFactory extends JDBCDataStoreFactory {
         // repositoryDatabase = new FileSystemRepositoryDatabase(envHome);
 
         Repository repo = new Repository(repositoryDatabase, envHome);
+        repo.create();
         return new GeoGITFacade(new GeoGIT(repo));
 	}
-
 
 
     /*

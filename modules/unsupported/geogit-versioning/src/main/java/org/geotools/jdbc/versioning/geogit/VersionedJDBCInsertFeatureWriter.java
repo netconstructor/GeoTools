@@ -7,7 +7,11 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Collections;
 
+import org.geotools.data.FeatureReader;
+import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentState;
 import org.geotools.factory.Hints;
@@ -16,6 +20,7 @@ import org.geotools.jdbc.JDBCUpdateFeatureWriter;
 import org.geotools.jdbc.versioning.VersioningFeatureWriter;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
+import org.opengis.filter.Id;
 
 /**
  * @author wdeane
@@ -77,16 +82,28 @@ public class VersionedJDBCInsertFeatureWriter extends JDBCInsertFeatureWriter
 	 */
 	@Override
 	public void write() throws IOException {
-        try {
+	    FeatureReader<SimpleFeatureType, SimpleFeature> reader = null;
+	    try {
             //do the insert
         	GeoGITFacade ggit = ((VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>) this.featureSource).getGeoGIT();
             dataStore.insert(last, featureType, st.getConnection());
             
+
             //the datastore sets as userData, grab it and update the fid
             String fid = (String) last.getUserData().get( "fid" );
             last.setID( fid );
-            ggit.insertAndAdd(last);
-            ggit.commit();
+            
+            Id filter = dataStore.getFilterFactory().id(Collections.singleton(dataStore.getFilterFactory().featureId(fid)));
+            Query query = new Query(featureType.getTypeName());
+            query.setFilter(filter);
+            reader = dataStore.getFeatureReader(query, Transaction.AUTO_COMMIT);
+            if (reader.hasNext()){
+                SimpleFeature updated = reader.next();
+                ggit.insertAndAdd(updated);
+                ggit.commit();
+            } else {
+                throw new Exception("Unable to retreive updated feature: " + fid + " from DataStore.");
+            }
             ContentEntry entry = featureSource.getEntry();
             ContentState state = entry.getState( this.tx );            
             state.fireFeatureAdded( featureSource, last );

@@ -11,6 +11,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.geotools.data.FeatureReader;
+import org.geotools.data.Query;
+import org.geotools.data.Transaction;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentState;
 import org.geotools.factory.Hints;
@@ -100,7 +103,7 @@ public class VersionedJDBCUpdateInsertFeatureWriter extends
             inserter.write();
             return;
         }
-        
+        FeatureReader<SimpleFeatureType, SimpleFeature> reader = null;
         try {
         	GeoGITFacade ggit = ((VersionedJDBCFeatureSource<SimpleFeatureType, SimpleFeature>) this.featureSource).getGeoGIT();
             //figure out what the fid is
@@ -122,10 +125,18 @@ public class VersionedJDBCUpdateInsertFeatureWriter extends
             }
 
             // do the write
-            dataStore.update(featureType, changed, values, filter, st.getConnection());
             
-            //ggit.insertAndAdd(last);
-            //ggit.commit();
+            dataStore.update(featureType, changed, values, filter, st.getConnection());
+            Query query = new Query(featureType.getTypeName());
+            query.setFilter(filter);
+            reader = dataStore.getFeatureReader(query, Transaction.AUTO_COMMIT);
+            if (reader.hasNext()){
+                SimpleFeature updated = reader.next();
+                ggit.insertAndAdd(updated);
+                ggit.commit();
+            } else {
+                throw new Exception("Unable to retreive updated feature: " + fid + " from DataStore.");
+            }
             // issue notification
             ContentEntry entry = featureSource.getEntry();
             ContentState state = entry.getState( this.tx );
@@ -134,6 +145,8 @@ public class VersionedJDBCUpdateInsertFeatureWriter extends
             }
         } catch (Exception e) {
             throw (IOException) new IOException().initCause(e);
+        } finally{
+            if (reader!=null)reader.close();
         }
 	}
 
