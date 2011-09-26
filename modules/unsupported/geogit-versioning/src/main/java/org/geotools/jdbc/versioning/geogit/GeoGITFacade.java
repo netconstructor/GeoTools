@@ -50,7 +50,7 @@ public class GeoGITFacade {
 	private boolean hasFid;
     protected static final String commitLogNs = "http://geogit.log";
     protected static final String commitLogName = "CommitLog";
-    protected static final String commitLogTypeSpec = "author:String,message:String,timestamp:Long";
+    protected static final String commitLogTypeSpec = "author:String,message:String,timestamp:Double";
     
     
     /**

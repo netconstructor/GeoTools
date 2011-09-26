@@ -134,6 +134,14 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 	}
 
 	/**
+     * @param geoGIT the geoGIT to set
+     */
+    public void setGeoGIT(GeoGITFacade geoGIT) {
+        this.geoGIT = geoGIT;
+    }
+
+
+    /**
 	 * @param sqlTypeName
 	 * @return
 	 * @see org.geotools.jdbc.IJDBCDataStore#getMapping(java.lang.String)
@@ -430,7 +438,7 @@ public final class GeoGITWrappingDataStore extends ContentDataStore implements
 		
 	}
 
-	private GeoGITFacade getGeoGIT() {
+	public GeoGITFacade getGeoGIT() {
 		// TODO Auto-generated method stub
 		return this.geoGIT;
 	}
