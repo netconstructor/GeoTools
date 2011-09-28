@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.geogit.api.GeoGIT;
+import org.geotools.data.DataStore;
 import org.geotools.data.DefaultQuery;
 import org.geotools.data.FeatureEvent;
 import org.geotools.data.FeatureReader;
@@ -61,8 +62,17 @@ import com.vividsolutions.jts.geom.Geometry;
  */
 
 @SuppressWarnings("unchecked")
-public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends SimpleFeature>  extends ContentFeatureStore implements VersioningFeatureStore<SimpleFeatureType, SimpleFeature> {
+public class VersionedJDBCFeatureStore<T extends SimpleFeatureType, F extends SimpleFeature>  extends ContentFeatureStore implements VersioningFeatureStore {
     
+    /* (non-Javadoc)
+     * @see org.geotools.data.store.ContentFeatureSource#getDataStore()
+     */
+    @Override
+    public DataStore getDataStore() {
+        // TODO Auto-generated method stub
+        return super.getDataStore();
+    }
+
     @SuppressWarnings("deprecation")
 	private static final Query QUERY_NONE = new DefaultQuery(null, Filter.EXCLUDE); 
     private GeoGITFacade ggit;

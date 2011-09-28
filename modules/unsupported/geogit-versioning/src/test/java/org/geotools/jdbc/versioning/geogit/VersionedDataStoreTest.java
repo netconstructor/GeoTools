@@ -14,7 +14,6 @@ import org.geotools.data.FeatureReader;
 import org.geotools.data.FeatureWriter;
 import org.geotools.data.Transaction;
 import org.geotools.data.postgis.PostGISTestSetup;
-import org.geotools.data.postgis.PostgisDataStoreTest;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.factory.CommonFactoryFinder;
@@ -30,83 +29,7 @@ import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
 
-public class VersionedDataStoreTest extends PostgisDataStoreTest {
-
-/*    @Override
-    protected String getFixtureId() {
-    	
-        return "versioned";
-    }*/
-    
-
-    @Override
-    protected String getFixtureId() {
-        return ((VersionedTestSetup)createTestSetup()).createDataStoreFactory().getDatabaseID() + "versioned";
-    }
-    
-
-    @Override
-    protected JDBCTestSetup createTestSetup() {
-        return new VersionedTestSetup();
-        
-    }
-    
-
-   @Override
-    protected void connect() throws Exception {
-        //create the test harness
-
-        if (setup == null) {
-            setup =  createTestSetup();
-        }
-        VersionedTestSetup vsetup = (VersionedTestSetup) setup;
-
-        vsetup.setFixture(fixture);
-        vsetup.setUp();
-
-        //initialize the database
-        vsetup.initializeDatabase();
-
-        //initialize the data
-        vsetup.setUpData();
-        
-        HashMap params = new HashMap();
-        params.put( JDBCDataStoreFactory.NAMESPACE.key, "http://www.geotools.org/test" );
-        //params.put( JDBCDataStoreFactory.SCHEMA.key, "geotools" );
-        params.put( JDBCDataStoreFactory.DATASOURCE.key, setup.getDataSource() );
-        params.putAll(fixture);
-
-       VersionedGeoGITDataStoreFactory factory = vsetup.createDataStoreFactory();
-        dataStore = factory.createDataStore( params );
-        
-        //setup.setUpDataStore(dataStore);
-        dialect = dataStore.getSQLDialect();
-    }
-   
-
-   @Override
-   protected boolean isOnline() throws Exception {
-	   VersionedTestSetup setup = (VersionedTestSetup) createTestSetup();
-       setup.setFixture(fixture);
-       
-       try {
-           DataSource dataSource = setup.getDataSource();
-           Connection cx = dataSource.getConnection();
-           cx.close();
-           return true;
-       } 
-       catch (Throwable t) {
-           throw new RuntimeException(t);
-       } 
-       finally {
-           try {
-               setup.tearDown();    
-           } 
-           catch(Exception e) {
-               System.out.println("Error occurred tearing down the test setup");
-           }
-       }
-   }
+public class VersionedDataStoreTest extends AbstractVersionedPostgisTest {
    
    public void testGetVersionedDataStore() throws Exception {
        assertTrue(dataStore instanceof GeoGITWrappingDataStore);
@@ -117,6 +40,7 @@ public class VersionedDataStoreTest extends PostgisDataStoreTest {
        assertTrue(featureSource instanceof VersioningFeatureStore);
    }
    
+   
    public void testVersionLog() throws IOException {
        FeatureWriter<SimpleFeatureType, SimpleFeature> writer = dataStore.getFeatureWriter(tname("ft1"), Transaction.AUTO_COMMIT);
 
@@ -124,10 +48,7 @@ public class VersionedDataStoreTest extends PostgisDataStoreTest {
            SimpleFeature feature = writer.next();
            feature.setAttribute(aname("stringProperty"), "foobar");
            writer.write();
-           
-
        }
-
 
        writer.close();
 

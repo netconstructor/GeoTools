@@ -4,7 +4,11 @@
 package org.geotools.jdbc.versioning;
 
 import java.io.IOException;
+
+import org.geotools.jdbc.IJDBCFeatureStore;
 import org.opengis.feature.Feature;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.FeatureType;
 import org.opengis.filter.Filter;
 
@@ -12,7 +16,7 @@ import org.opengis.filter.Filter;
  * @author wdeane
  *
  */
-public interface VersioningFeatureStore <T extends FeatureType, F extends Feature>  {
+public interface VersioningFeatureStore  extends IJDBCFeatureStore<SimpleFeatureType, SimpleFeature> {
 
 	    /**
 	     * Rolls back features matching the filter to the state they had on the

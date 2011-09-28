@@ -88,18 +88,7 @@ public class VersionedTestSetup extends PostGISTestSetup {
 	    protected Feature lines3;
 	    
 	    protected VersionedTestSetup setup;
-	/* (non-Javadoc)
-	 * @see org.geotools.data.postgis.PostGISTestSetup#setUpDataStore(org.geotools.jdbc.IJDBCDataStore)
-	 */
-/*	@Override
-	protected void setUpDataStore(IJDBCDataStore dataStore) {
-		// TODO Auto-generated method stub
-		super.setUpDataStore(dataStore);
-	}*/
 
-	/* (non-Javadoc)
-	 * @see org.geotools.data.postgis.PostGISTestSetup#createExampleFixture()
-	 */
 	@Override
 	protected Properties createExampleFixture() {
 		// TODO Auto-generated method stub

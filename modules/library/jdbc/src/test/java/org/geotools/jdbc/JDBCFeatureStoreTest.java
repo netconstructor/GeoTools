@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -36,10 +37,12 @@ import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.factory.Hints;
 import org.geotools.feature.AttributeTypeBuilder;
 import org.geotools.feature.DefaultFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.AttributeDescriptor;
+import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory;
 import org.opengis.filter.Id;
@@ -53,7 +56,7 @@ import com.vividsolutions.jts.geom.Point;
 
 
 public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
-    JDBCFeatureStore featureStore;
+    protected IJDBCFeatureStore featureStore;
 
     protected void connect() throws Exception {
         super.connect();
@@ -62,9 +65,9 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
     }
 
     public void testAddFeatures() throws IOException {
-        SimpleFeatureBuilder b = new SimpleFeatureBuilder(featureStore.getSchema());
+        SimpleFeatureBuilder b = new SimpleFeatureBuilder((SimpleFeatureType) featureStore.getSchema());
         DefaultFeatureCollection collection = new DefaultFeatureCollection(null,
-                featureStore.getSchema());
+                (SimpleFeatureType) featureStore.getSchema());
         
         FeatureEventWatcher watcher = new FeatureEventWatcher();
         
@@ -89,7 +92,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
             String fid = identifier.getID();
             Id filter = ff.id(Collections.singleton(identifier));
 
-            features = featureStore.getFeatures(filter);
+            features = (SimpleFeatureCollection) featureStore.getFeatures(filter);
             assertEquals(1, features.size());
 
             Iterator iterator = features.iterator();
@@ -98,6 +101,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
             SimpleFeature feature = (SimpleFeature) iterator.next();
             assertEquals(fid, feature.getID());
             assertFalse(iterator.hasNext());
+            
 
             features.close(iterator);
         }
@@ -135,7 +139,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
             String fid = identifier.getID();
             Id filter = ff.id(Collections.singleton(identifier));
 
-            features = featureStore.getFeatures(filter);
+            features = (SimpleFeatureCollection) featureStore.getFeatures(filter);
             assertEquals(1, features.size());
         }
     }
@@ -219,7 +223,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
     public void testAddNullAttributes() throws IOException {
         SimpleFeatureBuilder b = new SimpleFeatureBuilder(featureStore.getSchema());
         SimpleFeature nullFeature = b.buildFeature("testId");
-        featureStore.addFeatures(Arrays.asList(nullFeature));
+        featureStore.addFeatures(  Arrays.asList(nullFeature));
     }
     
     /**
@@ -231,7 +235,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
         for(int i = 0; i < attributeNames.length; i++) {
             attributeNames[i] = featureStore.getSchema().getDescriptor(i).getLocalName();
         }
-        Object[] nulls = new Object[attributeNames.length];
+Object[] nulls = new Object[attributeNames.length];
         featureStore.modifyFeatures(attributeNames, nulls, Filter.INCLUDE);
     }
 
@@ -375,7 +379,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
         FilterFactory ff = dataStore.getFilterFactory();
         Filter filter = ff.equals(ff.property(aname("intProperty")), ff.literal(1));
 
-        SimpleFeatureCollection features = featureStore.getFeatures();
+        SimpleFeatureCollection features = (SimpleFeatureCollection) featureStore.getFeatures();
         assertEquals(3, features.size());
 
         featureStore.removeFeatures(filter);
@@ -386,7 +390,7 @@ public abstract class JDBCFeatureStoreTest extends JDBCTestSupport {
     }
     
     public void testRemoveFeaturesWithInvalidFilter() throws IOException {
-        SimpleFeatureType t = featureStore.getSchema();
+        SimpleFeatureType t = (SimpleFeatureType) featureStore.getSchema();
         FilterFactory ff = CommonFactoryFinder.getFilterFactory(null);
         PropertyIsEqualTo f = ff.equals(ff.property("invalidAttribute"), ff.literal(5));
         

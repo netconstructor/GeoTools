@@ -29,6 +29,7 @@ import org.geotools.filter.FidFilterImpl;
 import org.geotools.filter.FilterCapabilities;
 import org.geotools.filter.NestedAttributeExpression;
 import org.geotools.filter.visitor.DefaultFilterVisitor;
+import org.geotools.jdbc.IJDBCDataStore;
 import org.geotools.jdbc.IJDBCFeatureSource;
 import org.geotools.jdbc.IJDBCFeatureStore;
 import org.geotools.jdbc.JDBCFeatureSource;
@@ -146,7 +147,7 @@ public class MappingFeatureIteratorFactory {
         if (mappedSource instanceof JDBCFeatureSource) {
             capabilities = ((IJDBCFeatureSource) mappedSource).getDataStore().getFilterCapabilities();
         } else if (mappedSource instanceof JDBCFeatureStore){
-            capabilities = ((IJDBCFeatureStore) mappedSource).getDataStore().getFilterCapabilities();
+            capabilities = ((IJDBCDataStore) ((IJDBCFeatureStore) mappedSource).getDataStore()).getFilterCapabilities();
         } else {
             throw new IllegalArgumentException("Joining queries are only supported on JDBC data stores");
         }

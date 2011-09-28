@@ -401,6 +401,7 @@ public final class JDBCFeatureStore extends ContentFeatureStore implements IJDBC
             }
         }
     }
+	
     
     /* (non-Javadoc)
 	 * @see org.geotools.jdbc.IJDBCFeatureStore#removeFeatures(org.opengis.filter.Filter)

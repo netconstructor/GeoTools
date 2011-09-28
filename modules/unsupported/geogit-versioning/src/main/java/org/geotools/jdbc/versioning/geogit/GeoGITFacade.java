@@ -4,6 +4,7 @@
 package org.geotools.jdbc.versioning.geogit;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -22,6 +23,7 @@ import org.geogit.storage.WrappedSerialisingFactory;
 import org.geotools.data.DataUtilities;
 import org.geotools.data.collection.ListFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureCollection;
+import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.WKTReader2;
 import org.geotools.util.NullProgressListener;
@@ -70,6 +72,29 @@ public class GeoGITFacade {
 		ggit.add().call();
 		return objectId;
 	}
+	
+	 /**
+         * Returns the most Version of a feature in the repo by id.
+         */
+	public Feature getFeature(String id){
+	    
+	    return null;
+	}
+	
+        /**
+         * Returns the most Version of a feature in the repo by id.
+         */
+        public Collection<FeatureType> getFeatureTypes(){
+            
+            return null;
+        }
+        
+        /**
+         * Returns the most Version of a feature in the repo by id.
+         */
+        public Collection<FeatureType> getFeatureTypeForFeature(String featureId, String revisionId){
+            return null;
+        }
 
 	/**
 	 * Inserts the feature to the index but does not stages it to be committed
