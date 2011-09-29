@@ -4,28 +4,19 @@
 package org.geotools.jdbc.versioning.geogit;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
 
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp.BasicDataSource;
 import org.apache.commons.io.FileUtils;
 import org.geogit.repository.Repository;
 import org.geogit.storage.bdbje.EntityStoreConfig;
 import org.geogit.storage.bdbje.EnvironmentBuilder;
 import org.geogit.storage.bdbje.JERepositoryDatabase;
-import org.geogit.storage.fs.FileSystemRepositoryDatabase;
 import org.geotools.data.DataUtilities;
-import org.geotools.data.jdbc.datasource.DBCPDataSource;
 import org.geotools.data.postgis.PostGISTestSetup;
 import org.geotools.feature.NameImpl;
 import org.geotools.feature.simple.SimpleFeatureBuilder;
 import org.geotools.geometry.jts.WKTReader2;
-import org.geotools.jdbc.IJDBCDataStore;
-import org.geotools.jdbc.JDBCDataStoreFactory;
-import org.geotools.jdbc.JDBCTestSetup;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.GeometryDescriptor;
@@ -195,7 +186,10 @@ public class VersionedTestSetup extends PostGISTestSetup {
             repo = new Repository(repositoryDatabase, envHome);
 
             repo.create();
+            
         } catch (Exception e) {
+        } finally{
+            if (repo != null)repo.close();
         }
     }
 
@@ -206,6 +200,11 @@ public class VersionedTestSetup extends PostGISTestSetup {
 	public void tearDown() throws Exception {
 		// TODO Auto-generated method stub
 		super.tearDown();
+		if (repo != null){
+		 repo.close();  
+		 repo = null;
+
+		}
 
         
 	}

@@ -60,6 +60,7 @@ public class VersionedJDBCFeatureSource<T extends SimpleFeatureType, F extends S
 		ggit = geogit;
 		
 		
+		
 	}
 
 

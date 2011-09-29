@@ -261,6 +261,7 @@ Object[] nulls = new Object[attributeNames.length];
         numbers.add(new Integer(3));
         numbers.add(new Integer(4));
         numbers.add(new Integer(5));
+       
 
         for (int i = 3; iterator.hasNext(); i++) {
             SimpleFeature feature = (SimpleFeature) iterator.next();
