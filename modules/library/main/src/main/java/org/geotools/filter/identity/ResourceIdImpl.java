@@ -50,7 +50,7 @@ public class ResourceIdImpl extends FeatureIdVersionedImpl implements ResourceId
     public ResourceIdImpl(String fid, String featureVersion, Version version) {
         super(fid, featureVersion, null );
         if( version == null ){
-            throw new NullPointerException("Version is required for rid lookup");
+        	version = new Version(Version.Action.LAST);
         }
         this.version = version.union();
     }
@@ -126,5 +126,4 @@ public class ResourceIdImpl extends FeatureIdVersionedImpl implements ResourceId
         hash = Utilities.hash(endTime, hash);
         return hash;
     }
-
 }
