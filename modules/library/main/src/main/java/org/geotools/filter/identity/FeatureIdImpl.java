@@ -28,62 +28,98 @@ import org.opengis.filter.identity.FeatureId;
  * <p>
  * @author Justin Deoliveira, The Open Planning Project
  *
- *
- *
- *
  * @source $URL$
+ * @since 2.5
+ * @version 8.0
  */
 public class FeatureIdImpl implements FeatureId {
 
-	/** underlying fid */
-	protected String fid;
-	protected String origionalFid;
-	public FeatureIdImpl( String fid ) {
-		this.fid = fid;
-		if ( fid == null ) {
-			throw new NullPointerException( "fid must not be null" );
-		}
-	}
-	
-	public String getID() {
-		return fid;
-	}
+    /** underlying fid */
+    protected String fid;
+    protected String origionalFid;
 
-	public void setID( String id ){
-		if ( id == null ) {
-			throw new NullPointerException( "fid must not be null" );
-		}	
-		if( origionalFid == null ){
-                    origionalFid = fid;
-                }
-		fid = id;			
-	}
-	
-	public boolean matches(Feature feature) {
-		return feature != null && fid.equals( feature.getIdentifier().getID() );
-	}
+    public FeatureIdImpl(String fid) {
+        this.fid = fid;
+        if (fid == null) {
+            throw new NullPointerException("fid must not be null");
+        }
+    }
 
-	public boolean matches(Object object) {
-		if ( object instanceof Feature ) {
-			return matches( (Feature) object );
-		}	
-		return false;
-	}
+    public String getID() {
+        return fid;
+    }
 
-	public String toString() {
-		return fid;
-	}
-	
-	public boolean equals(Object obj) {
-		if ( obj instanceof FeatureId) {
-			return fid.equals( ((FeatureId)obj).getID() );
-		}
-		
-		return false;
-	}
-	
-	public int hashCode() {
-		return fid.hashCode();
-	}
+    public void setID(String id) {
+        if (id == null) {
+            throw new NullPointerException("fid must not be null");
+        }
+        if (origionalFid == null) {
+            origionalFid = fid;
+        }
+        fid = id;
+    }
+
+    public boolean matches(Feature feature) {
+        if( feature == null ){
+            return false;
+        }
+        return equalsExact( feature.getIdentifier() );
+    }
+
+
+    public boolean matches(Object object) {
+        if (object instanceof Feature) {
+            return matches((Feature) object);
+        }
+        return false;
+    }
+
+    public String toString() {
+        return fid;
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof FeatureId) {
+            return fid.equals(((FeatureId) obj).getID());
+        }
+        return false;
+    }
+
+    public int hashCode() {
+        return fid.hashCode();
+    }
+
+    @Override
+    public boolean equalsExact(FeatureId id) {
+        if (id instanceof FeatureId) {
+            return fid.equals( id.getID() ) &&
+                    fid.equals( id.getRid() ) &&
+                    id.getPreviousRid() == null &&
+                    id.getFeatureVersion() == null;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equalsFID(FeatureId id) {
+        if( id == null ) return false;
+        
+        return getID().equals(id.getID());
+    }
+
+    @Override
+    public String getRid() {
+        return getID();
+    }
+
+    @Override
+    public String getPreviousRid() {
+        return null;
+    }
+
+    @Override
+    public String getFeatureVersion() {
+        return null;
+    }
 
 }
