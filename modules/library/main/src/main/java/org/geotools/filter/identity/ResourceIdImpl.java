@@ -50,10 +50,21 @@ public class ResourceIdImpl extends FeatureIdVersionedImpl implements ResourceId
     public ResourceIdImpl(String fid, String featureVersion, Version version) {
         super(fid, featureVersion, null );
         if( version == null ){
-        	version = new Version(Version.Action.LAST);
+            throw new NullPointerException("Version is required for rid lookup");
         }
         this.version = version.union();
     }
+    
+    /**
+     * Obtain a ResourceId that assumes the default, i.e. last, version.
+     * 
+     * @param fid
+     * @param featureVersion
+     */
+    public ResourceIdImpl(String fid, String featureVersion) {
+    	this(fid, featureVersion, new Version(Version.Action.LAST));
+    }
+    
     /**
      * 
      * @param rid
