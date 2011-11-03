@@ -189,7 +189,7 @@ public class FeatureSourceDecorator<T extends FeatureType, F extends Feature> im
      * {@link FeatureSource}.
      * </p>
      * If the Feature Type is versioned, and the Query filter contains an {@link Id} filter with
-     * {@link ResourceId} predicates, defers to the versioning backend (GeoGIT) to spply the
+     * {@link ResourceId} predicates, defers to the versioning backend (GeoGIT) to supply the
      * requested versions of the feature identified by the {@link ResourceId}s; othwewise just wraps
      * the wrapped FeatureSource results into a decorating FeatureCollection that assigns
      * {@link ResourceId} instead of {@link FeatureId} to returned Features, containing the current
