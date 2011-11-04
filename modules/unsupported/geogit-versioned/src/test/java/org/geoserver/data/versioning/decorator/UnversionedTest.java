@@ -52,7 +52,7 @@ public class UnversionedTest extends DecoratedTestCase {
             assertNotNull(source);
             SimpleFeatureCollection collection = source.getFeatures();
             assertNotNull(collection);
-            List<SimpleFeature> featList = getOriginalFeatures(sampleName);
+            List<SimpleFeature> featList = getCurrentFeatures(sampleName);
             assertEquals(featList.size(), collection.size());
             feats = collection.features();
             assertNotNull(feats);
@@ -88,7 +88,7 @@ public class UnversionedTest extends DecoratedTestCase {
             query.setVersion("LAST");
             SimpleFeatureCollection collection = source.getFeatures(query);
             assertNotNull(collection);
-            List<SimpleFeature> featList = getOriginalFeatures(sampleName);
+            List<SimpleFeature> featList = getCurrentFeatures(sampleName);
             assertEquals(featList.size(), collection.size());
             feats = collection.features();
             assertNotNull(feats);
@@ -105,15 +105,15 @@ public class UnversionedTest extends DecoratedTestCase {
     }
     
     public void testIdQuery() throws Exception {
-        verifyIdQuery();
+        verifyIdQuery(test1);
     }
     
     public void testCurrentIdQuery() throws Exception {
         updateTestFeatures();
-        verifyIdQuery();
+        verifyIdQuery(test1b);
     }
     
-    private void verifyIdQuery() throws Exception {
+    private void verifyIdQuery(SimpleFeature expectedFeature) throws Exception {
                SimpleFeatureIterator feats = null;
         try {
             SimpleFeatureSource source = versioned.getFeatureSource(testName);
@@ -130,7 +130,7 @@ public class UnversionedTest extends DecoratedTestCase {
             assertTrue(feats.hasNext());
             SimpleFeature feat = feats.next();
             assertNotNull(feat);
-            assertTrue(feat.equals(test1));
+            assertTrue(feat.equals(expectedFeature));
             assertFalse(feats.hasNext());
         } finally {
             if(feats != null)

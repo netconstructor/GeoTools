@@ -216,8 +216,24 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
         }
     }
     
+    protected List<SimpleFeature> getCurrentFeatures(String typeName) {
+        if(typeName.equals(sampleName)) {
+            if(sample1b == null)
+                return getOriginalFeatures(sampleName);
+            else
+                return getUpdatedFeatures(sampleName);
+            
+        } else if(typeName.equals(testName)) {
+            if(test1b == null)
+                return getOriginalFeatures(testName);
+            else
+                return getUpdatedFeatures(testName);
+        }
+        return new ArrayList<SimpleFeature>();
+    }
+    
     protected List<SimpleFeature> getOriginalFeatures(String typeName) {
-        List<SimpleFeature> featList = new ArrayList();
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>();
         if(typeName.equals(sampleName)) {
             featList.add(sample1);
             featList.add(sample2);
@@ -231,7 +247,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
     }
     
     protected List<SimpleFeature> getUpdatedFeatures(String typeName) {
-        List<SimpleFeature> featList = new ArrayList();
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>();
         if(typeName.equals(sampleName)) {
             featList.add(sample1b);
             featList.add(sample2b);
@@ -245,7 +261,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
     }
     
     protected List<SimpleFeature> getAllFeatures(String typeName) {
-        List<SimpleFeature> featList = new ArrayList();
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>();
         if(typeName.equals(sampleName)) {
             featList.add(sample1);
             featList.add(sample2);
@@ -270,6 +286,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
             if(feat.equals(it.next()))
                 return true;
         }
+        LOGGER.info("Could not match feature to list: " + feat.toString());
         return false;
     }
 }

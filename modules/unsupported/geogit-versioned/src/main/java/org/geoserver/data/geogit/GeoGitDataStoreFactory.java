@@ -100,7 +100,7 @@ public class GeoGitDataStoreFactory implements DataStoreFactorySpi {
 
         RepositoryDatabase ggitRepoDb = new JERepositoryDatabase(geogitEnv, indexEnv);
 
-        Repository repository = new Repository(ggitRepoDb);
+        Repository repository = new Repository(ggitRepoDb, dataRoot);
         repository.create();
 
 //        Repository repository = GEOGIT.get().getRepository();
