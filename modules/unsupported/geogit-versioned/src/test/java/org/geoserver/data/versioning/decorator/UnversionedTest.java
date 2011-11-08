@@ -1,12 +1,14 @@
 package org.geoserver.data.versioning.decorator;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.simple.SimpleFeatureSource;
+import org.geotools.filter.FilterFactoryFinder;
 import org.geotools.filter.FilterFactoryImpl;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -14,6 +16,7 @@ import org.opengis.feature.type.Name;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.Version;
+import org.opengis.filter.spatial.BBOX;
 
 public class UnversionedTest extends DecoratedTestCase {
     
@@ -65,7 +68,6 @@ public class UnversionedTest extends DecoratedTestCase {
         } finally {
             if(feats != null)
                 feats.close();
-
         }
     }
     
@@ -137,6 +139,46 @@ public class UnversionedTest extends DecoratedTestCase {
                 feats.close();
         }
     }
-
     
+    public void testBboxQuery() throws Exception {
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>(2);
+        featList.add(test1);
+        featList.add(test3);
+        verifyBboxQuery(featList);
+    }
+    
+    public void testCurrentBboxQuery() throws Exception {
+        updateTestFeatures();
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>(2);
+        featList.add(test1b);
+        featList.add(test3b);
+        verifyBboxQuery(featList);
+    }
+    
+    private void verifyBboxQuery(List<SimpleFeature> expectedFeatures) throws Exception  {
+        SimpleFeatureIterator feats = null;
+        try {
+            SimpleFeatureSource source = versioned.getFeatureSource(testName);
+            assertNotNull(source);
+            
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.bbox("ln", -1.5, -1.5, 1.5, 1.5, "srid=4326");
+            Query query = new Query(testName, filter);
+            SimpleFeatureCollection collection = source.getFeatures(query);
+            assertNotNull(collection);
+            assertEquals(expectedFeatures.size(), collection.size());
+            feats = collection.features();
+            assertNotNull(feats);
+            while(feats.hasNext()) {
+                SimpleFeature feat = feats.next();
+                assertNotNull(feat);
+                LOGGER.info(feat.toString());
+                assertTrue(containsFeature(feat, expectedFeatures));
+            }
+        } finally {
+            if(feats != null)
+                feats.close();
+        }
+    }
+
 }
