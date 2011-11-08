@@ -16,22 +16,22 @@
  */
 package org.geotools.swing;
 
-import org.junit.BeforeClass;
 import java.awt.Rectangle;
 
-import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
-import org.fest.swing.edt.GuiActionRunner;
-import org.fest.swing.edt.GuiQuery;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.crs.DefaultEngineeringCRS;
 import org.geotools.renderer.GTRenderer;
 import org.geotools.swing.event.MapPaneEvent;
-
 import org.geotools.swing.testutils.MockRenderer;
 import org.geotools.swing.testutils.WaitingMapPaneListener;
 
+import org.fest.swing.edt.FailOnThreadViolationRepaintManager;
+import org.fest.swing.edt.GuiActionRunner;
+import org.fest.swing.edt.GuiQuery;
+
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -68,6 +68,7 @@ public class JMapPaneHeadlessTest extends JMapPaneTestBase {
             }
         });
         listener = new WaitingMapPaneListener();
+        mapPane.addMapPaneListener(listener);
     }
     
     @Test
@@ -101,7 +102,6 @@ public class JMapPaneHeadlessTest extends JMapPaneTestBase {
     
     @Test
     public void setMapContentFiresEvent() {
-        mapPane.addMapPaneListener(listener);
         listener.setExpected(MapPaneEvent.Type.NEW_MAPCONTENT);
         
         MapContent mapContent = new MapContent();
@@ -138,7 +138,6 @@ public class JMapPaneHeadlessTest extends JMapPaneTestBase {
     @Test
     public void setDisplayAreaFiresEvent_WithMapContent() {
         mapPane.setMapContent(new MapContent());
-        mapPane.addMapPaneListener(listener);
         listener.setExpected(MapPaneEvent.Type.DISPLAY_AREA_CHANGED);
         
         mapPane.setDisplayArea(WORLD);
@@ -147,7 +146,6 @@ public class JMapPaneHeadlessTest extends JMapPaneTestBase {
     
     @Test
     public void setDisplayAreaFiresEvent_NoMapContent() {
-        mapPane.addMapPaneListener(listener);
         listener.setExpected(MapPaneEvent.Type.DISPLAY_AREA_CHANGED);
         
         mapPane.setDisplayArea(WORLD);
@@ -204,6 +202,17 @@ public class JMapPaneHeadlessTest extends JMapPaneTestBase {
 
         // just checking no exception is thrown
         mapPane.reset();
+    }
+    
+    @Test
+    public void moveImageIgnoredWhenPaneNotVisible() {
+        MapContent mapContent = createMapContent(WORLD);
+        mapPane.setMapContent(mapContent);
+        
+        listener.setExpected(MapPaneEvent.Type.DISPLAY_AREA_CHANGED);
+        mapPane.moveImage(100, 0);
+        
+        assertFalse(listener.await(MapPaneEvent.Type.DISPLAY_AREA_CHANGED, WAIT_TIMEOUT));
     }
     
     /**
