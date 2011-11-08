@@ -16,6 +16,8 @@ import org.geogit.api.RevCommit;
 import org.geogit.api.RevObject.TYPE;
 import org.geogit.repository.Repository;
 import org.geogit.storage.StagingDatabase;
+import org.geotools.data.Query;
+import org.geotools.util.DateRange;
 import org.geotools.util.Range;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.identity.ResourceId;
@@ -33,6 +35,19 @@ public class VersionQuery {
     public VersionQuery(final GeoGIT ggit, final Name typeName) {
         this.ggit = ggit;
         this.typeName = typeName;
+    }
+    
+    /**
+     * This will filter the provided iterator against the query and return a new,
+     * better iterator.
+     * @param id
+     * @param query
+     * @return
+     */
+    public Iterator<Ref> get(final ResourceId id, Iterator<Ref> it, Query query) {
+        
+        
+        return null;
     }
 
     /**
