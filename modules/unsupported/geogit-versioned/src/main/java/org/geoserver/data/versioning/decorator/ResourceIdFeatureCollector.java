@@ -8,6 +8,7 @@ import org.geogit.api.GeoGIT;
 import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.repository.Repository;
+import org.geogit.storage.ObjectReader;
 import org.geogit.storage.StagingDatabase;
 import org.geogit.storage.WrappedSerialisingFactory;
 import org.opengis.feature.Feature;
@@ -61,9 +62,12 @@ public class ResourceIdFeatureCollector implements Iterable<Feature> {
 
         private final FeatureType type;
 
+        private WrappedSerialisingFactory serialisingFactory;
+
         public RefToFeature(final Repository repo, final FeatureType type) {
             this.repo = repo;
             this.type = type;
+            serialisingFactory = WrappedSerialisingFactory.getInstance();
         }
 
         @Override
@@ -73,8 +77,8 @@ public class ResourceIdFeatureCollector implements Iterable<Feature> {
             StagingDatabase database = repo.getIndex().getDatabase();
             Feature feature;
             try {
-                feature = database.get(contentId, WrappedSerialisingFactory.getInstance().createFeatureReader(type, featureId));
-//                feature = database.get(contentId, new FeatureReader(type, featureId));
+                ObjectReader<Feature> featureReader = serialisingFactory.createFeatureReader(type, featureId);
+                feature = database.get(contentId, featureReader);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

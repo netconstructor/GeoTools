@@ -17,6 +17,7 @@ import org.geogit.storage.ObjectReader;
 import org.geogit.storage.WrappedSerialisingFactory;
 import org.geotools.data.simple.SimpleFeatureCollection;
 import org.geotools.data.simple.SimpleFeatureIterator;
+import org.geotools.factory.Hints;
 import org.geotools.feature.CollectionListener;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
@@ -68,7 +69,7 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
     private final RevTree typeTree;
 
     private Integer maxFeatures;
-    
+
     public GeoGitSimpleFeatureCollection(final SimpleFeatureType type, final Filter filter,
             final ObjectDatabase odb, final RevTree typeTree) {
         this.type = type;
@@ -389,16 +390,23 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
 
         private final ObjectDatabase odb;
 
+        final WrappedSerialisingFactory serialisingFactory;
+
         public GeoGitFeatureIterator(final Iterator<Ref> featureRefs, final SimpleFeatureType type,
                 final Filter filter, final ObjectDatabase odb) {
             this.featureRefs = featureRefs;
             this.type = type;
             this.filter = filter;
             this.odb = odb;
+            this.serialisingFactory = WrappedSerialisingFactory.getInstance();
         }
 
         @Override
         protected SimpleFeature computeNext() {
+            Hints hints = new Hints();
+            if (null != geometryFactory) {
+                hints.put(Hints.GEOMETRY_FACTORY, geometryFactory);
+            }
             try {
                 while (featureRefs.hasNext()) {
                     Ref featureRef = featureRefs.next();
@@ -406,11 +414,10 @@ public class GeoGitSimpleFeatureCollection implements SimpleFeatureCollection {
                     ObjectId contentId = featureRef.getObjectId();
 
                     SimpleFeature feature;
-                    ObjectReader<Feature> reader = WrappedSerialisingFactory.getInstance().createFeatureReader(type, featureId);
-//                    FeatureReader reader = new FeatureReader(type, featureId);
-//                    reader.setGeometryFactory(geometryFactory);
+                    ObjectReader<Feature> featureReader = serialisingFactory.createFeatureReader(
+                            type, featureId, hints);
 
-                    feature = (SimpleFeature) odb.get(contentId, reader);
+                    feature = (SimpleFeature) odb.get(contentId, featureReader);
                     feature = reprojector.reproject(feature);
                     if (filter.evaluate(feature)) {
                         return feature;

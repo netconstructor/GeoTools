@@ -17,11 +17,11 @@ import org.geogit.api.RevObject.TYPE;
 import org.geogit.repository.Repository;
 import org.geogit.storage.StagingDatabase;
 import org.geotools.data.Query;
-import org.geotools.util.DateRange;
 import org.geotools.util.Range;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.identity.ResourceId;
 import org.opengis.filter.identity.Version;
+import org.opengis.filter.identity.Version.Action;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
@@ -36,19 +36,6 @@ public class VersionQuery {
         this.ggit = ggit;
         this.typeName = typeName;
     }
-    
-    /**
-     * This will filter the provided iterator against the query and return a new,
-     * better iterator.
-     * @param id
-     * @param query
-     * @return
-     */
-    public Iterator<Ref> get(final ResourceId id, Iterator<Ref> it, Query query) {
-        
-        
-        return null;
-    }
 
     /**
      * @param id
@@ -60,27 +47,33 @@ public class VersionQuery {
         final String featureId = id.getID();
         final String featureVersion = id.getFeatureVersion();
 
+        final Version version = id.getVersion();
+        final boolean isDateRangeQuery = id.getStartTime() != null || id.getEndTime() != null;
+        final boolean isVesionQuery = !version.isEmpty();
+
         final Ref requestedVersionRef = extractRequestedVersion(ggit, featureId, featureVersion);
         {
-            if (requestedVersionRef != null && id.getEndTime() == null && id.getStartTime() == null
-                    && id.getVersion() == null) {
-                // easy, no extra constraints specified
-                return Iterators.singletonIterator(requestedVersionRef);
+            final boolean explicitVersionQuery = !isDateRangeQuery && !isVesionQuery;
+            if (explicitVersionQuery) {
+                if (requestedVersionRef == null) {
+                    return Iterators.emptyIterator();
+                } else {
+                    // easy, no extra constraints specified
+                    return Iterators.singletonIterator(requestedVersionRef);
+                }
             }
         }
 
-        List<Ref> result = new ArrayList<Ref>(5);
+        // at this point is either a version query or a date range query...
 
-        // previousRid is for reporting, not for querying, so not needed here
-        // String previousRid = rid.getPreviousRid();
-        final Version version = id.getVersion();
+        List<Ref> result = new ArrayList<Ref>(5);
 
         // filter commits that affect the requested feature
         final List<String> path = path(featureId);
         LogOp logOp = ggit.log().addPath(path);
 
-        // limit commits by time range, if speficied
-        if (id.getStartTime() != null || id.getEndTime() != null) {
+        if (isDateRangeQuery) {
+            // time range query, limit commits by time range, if speficied
             Date startTime = id.getStartTime() == null ? new Date(0L) : id.getStartTime();
             Date endTime = id.getEndTime() == null ? new Date(Long.MAX_VALUE) : id.getEndTime();
             boolean isMinIncluded = true;
@@ -93,18 +86,18 @@ public class VersionQuery {
         // all commits whose tree contains the requested feature
         Iterator<RevCommit> featureCommits = logOp.call();
 
-        if (version == null) {
+        if (isDateRangeQuery) {
             List<Ref> allInAscendingOrder = getAllInAscendingOrder(ggit, featureCommits, featureId);
             result.addAll(allInAscendingOrder);
-        } else {
-            if (version.getDateTime() != null) {
+        } else if (isVesionQuery) {
+            if (version.isDateTime()) {
                 final Date validAsOf = version.getDateTime();
                 RevCommit closest = findClosest(validAsOf, featureCommits);
                 if (closest != null) {
                     featureCommits = Iterators.singletonIterator(closest);
                     result.addAll(getAllInAscendingOrder(ggit, featureCommits, featureId));
                 }
-            } else if (version.getIndex() != null) {
+            } else if (version.isIndex()) {
                 final int requestIndex = version.getIndex().intValue();
                 final int listIndex = requestIndex - 1;// version indexing starts at 1
                 List<Ref> allVersions = getAllInAscendingOrder(ggit, featureCommits, featureId);
@@ -115,8 +108,8 @@ public class VersionQuery {
                         result.add(allVersions.get(allVersions.size() - 1));
                     }
                 }
-            } else if (version.getVersionAction() != null) {
-                final Version.Action versionAction = version.getVersionAction();
+            } else if (version.isVersionAction()) {
+                final Action versionAction = version.getVersionAction();
                 List<Ref> allInAscendingOrder = getAllInAscendingOrder(ggit, featureCommits,
                         featureId);
                 switch (versionAction) {
@@ -150,7 +143,6 @@ public class VersionQuery {
                 }
             }
         }
-
         return result.iterator();
     }
 

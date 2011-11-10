@@ -28,6 +28,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.filter.identity.ResourceId;
 import org.opengis.filter.sort.SortBy;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
@@ -307,6 +308,7 @@ public class GeoGitFeatureSourceTest extends RepositoryTestCase {
         }
 
         for (FeatureId id : ids) {
+            assertFalse(id instanceof ResourceId);
             assertNotNull(id.getID());
             assertNotNull(id + " has no featureVersion set", id.getFeatureVersion());
             Ref ref = expected.get(id.getID());

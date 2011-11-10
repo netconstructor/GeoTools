@@ -26,15 +26,15 @@ public class GeoGitDataStoreFactory implements DataStoreFactorySpi {
 
     public static final Param DEFAULT_NAMESPACE = new Param("namespace", String.class,
             "Default namespace", false);
-    
-    public static final Param DATA_ROOT = new Param("data_root", String.class,
-    		"Root directory for the versioned data store", false);
-    
-    public static final Param REPO_PATH = new Param("repo_path", String.class,
-    		"Path, within the data root, for the GeoGIT repository", false);
-    
-    public static final Param INDEX_PATH = new Param("index_path", String.class,
-    		"Path, within the data root, for the GeoGIT index repository", false);
+
+    public static final Param DATA_ROOT = new Param("data_root", String.class, 
+            "Root directory for the versioned data store", false);
+
+    public static final Param REPO_PATH = new Param("repo_path", String.class, 
+            "Path, within the data root, for the GeoGIT repository", false);
+
+    public static final Param INDEX_PATH = new Param("index_path", String.class, 
+            "Path, within the data root, for the GeoGIT index repository", false);
 
     @Override
     public String getDisplayName() {
@@ -83,17 +83,16 @@ public class GeoGitDataStoreFactory implements DataStoreFactorySpi {
         }
 
         String defaultNamespace = (String) DEFAULT_NAMESPACE.lookUp(params);
-
+        
         String dataRootPath = (String) DATA_ROOT.lookUp(params);
         String repoPath = (String) REPO_PATH.lookUp(params);
         String indexPath = (String) INDEX_PATH.lookUp(params);
-        
+
         final File dataRoot = new File(dataRootPath);
         final File geogitRepo = new File(dataRoot, repoPath);
         final File indexRepo = new File(dataRoot, indexPath);
-        
-        EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
 
+        EnvironmentBuilder esb = new EnvironmentBuilder(new EntityStoreConfig());
         Properties bdbEnvProperties = null;
         Environment geogitEnv = esb.buildEnvironment(geogitRepo, bdbEnvProperties);
         Environment indexEnv = esb.buildEnvironment(indexRepo, bdbEnvProperties);

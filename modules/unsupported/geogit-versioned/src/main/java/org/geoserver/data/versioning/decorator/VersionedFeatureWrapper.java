@@ -1,11 +1,15 @@
 package org.geoserver.data.versioning.decorator;
 
+import org.geotools.factory.CommonFactoryFinder;
 import org.geotools.feature.DecoratingFeature;
 import org.geotools.filter.identity.ResourceIdImpl;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.ResourceId;
+
+import com.sun.org.apache.xpath.internal.operations.Gte;
 
 class VersionedFeatureWrapper {
 
@@ -22,6 +26,9 @@ class VersionedFeatureWrapper {
 
     private static final class SimpleFeatureWrapper extends DecoratingFeature implements
             SimpleFeature {
+        private static final FilterFactory2 FILTER_FACTORY = CommonFactoryFinder
+                .getFilterFactory2(null);
+
         private final String versionId;
 
         public SimpleFeatureWrapper(final SimpleFeature delegate, final String versionId) {
@@ -31,13 +38,13 @@ class VersionedFeatureWrapper {
 
         @Override
         public FeatureId getIdentifier() {
-            ResourceId rid = new ResourceIdImpl(super.getID(), versionId);
+            FeatureId rid = FILTER_FACTORY.featureId(super.getID(), versionId);
             return rid;
         }
 
         @Override
         public String getID() {
-            return super.getID() + '@' + versionId;
+            return super.getID(); // + '@' + versionId;
         }
     }
 }

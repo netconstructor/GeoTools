@@ -13,6 +13,7 @@ import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.Identifier;
 import org.opengis.filter.identity.ResourceId;
+import org.opengis.filter.identity.Version;
 
 public class VersionFilters {
 
@@ -70,7 +71,7 @@ public class VersionFilters {
                         }
                     } else if (id instanceof FeatureId) {
                         FeatureId fid = (FeatureId) id;
-                        int idx = fid.getID().indexOf(ResourceId.VERSION_SEPARATOR);
+                        int idx = fid.getID().indexOf(FeatureId.VERSION_SEPARATOR);
                         if (idx > 0) {
                             String featureId = fid.getID().substring(0, idx);
                             String versionId = fid.getID().substring(idx + 1);

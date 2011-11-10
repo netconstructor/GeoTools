@@ -20,6 +20,7 @@ import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
+import org.opengis.filter.identity.ResourceId;
 
 public class GeoGitFeatureStoreTest extends RepositoryTestCase {
 
@@ -65,6 +66,7 @@ public class GeoGitFeatureStoreTest extends RepositoryTestCase {
             assertEquals(3, addedFeatures.size());
 
             for (FeatureId id : addedFeatures) {
+                assertFalse(id instanceof ResourceId);
                 assertNotNull(id.getFeatureVersion());
             }
 

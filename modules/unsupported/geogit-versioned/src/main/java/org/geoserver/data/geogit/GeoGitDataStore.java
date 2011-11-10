@@ -15,7 +15,7 @@ import org.geogit.api.RevTree;
 import org.geogit.repository.Repository;
 import org.geogit.storage.ObjectDatabase;
 import org.geogit.storage.ObjectReader;
-import org.geogit.storage.ObjectSerialisingFactory;
+import org.geogit.storage.ObjectWriter;
 import org.geogit.storage.RefDatabase;
 import org.geogit.storage.WrappedSerialisingFactory;
 import org.geoserver.data.versioning.VersioningDataStore;
@@ -47,8 +47,6 @@ public class GeoGitDataStore implements VersioningDataStore {
     private static final String NULL_NAMESPACE = "";
 
     private Repository repo;
-    
-    private ObjectSerialisingFactory fact;
 
     private final String defaultNamespace;
 
@@ -60,7 +58,6 @@ public class GeoGitDataStore implements VersioningDataStore {
         Preconditions.checkNotNull(repo, "repository");
         this.repo = repo;
         this.defaultNamespace = defaultNamespace;
-        this.fact = WrappedSerialisingFactory.getInstance();
         init();
     }
 
@@ -74,8 +71,11 @@ public class GeoGitDataStore implements VersioningDataStore {
             final RevTree typesTree = objectDatabase.newTree();
             ObjectId typesTreeId;
             try {
-                typesTreeId = objectDatabase.put(fact.createRevTreeWriter(typesTree));
-//                typesTreeId = objectDatabase.put(new RevTreeWriter(typesTree));
+                WrappedSerialisingFactory serialisingFactory;
+                serialisingFactory = WrappedSerialisingFactory.getInstance();
+                ObjectWriter<RevTree> treeWriter = serialisingFactory
+                        .createRevTreeWriter(typesTree);
+                typesTreeId = objectDatabase.put(treeWriter);
             } catch (Exception e) {
                 throw new IOException(e);
             }

@@ -16,8 +16,8 @@ import org.springframework.util.Assert;
 public class VersioningAdapterFactory {
 
     @SuppressWarnings({ "rawtypes" })
-    public static FeatureSource create(final FeatureSource subject, Repository versioningRepo) {
-//        final Repository versioningRepo = GEOGIT.get().getRepository();
+    public static FeatureSource create(final FeatureSource subject, 
+            Repository versioningRepo) {
 
         final Name typeName = subject.getSchema().getName();
 
@@ -51,10 +51,9 @@ public class VersioningAdapterFactory {
     }
 
     @SuppressWarnings("rawtypes")
-    public static DataAccess create(final DataAccess subject, Repository versioningRepo) {
+    public static DataAccess create(final DataAccess subject, 
+            Repository versioningRepo) {
         Assert.notNull(subject);
-
-//        final Repository versioningRepo = GEOGIT.get().getRepository();
 
         // if (subject instanceof DataStore) {
         // return new VersioningDataStore((DataStore) subject, versioningRepo);
