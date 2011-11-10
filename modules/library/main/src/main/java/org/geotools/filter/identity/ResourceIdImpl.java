@@ -19,9 +19,9 @@ package org.geotools.filter.identity;
 import java.util.Date;
 
 import org.geotools.util.Utilities;
+import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.ResourceId;
 import org.opengis.filter.identity.Version;
-import org.opengis.filter.identity.Version.Action;
 
 /**
  * Implementation of {@link ResourceId} used for Query.
@@ -49,32 +49,37 @@ public class ResourceIdImpl extends FeatureIdVersionedImpl implements ResourceId
      */
     public ResourceIdImpl(String fid, String featureVersion, Version version) {
         super(fid, featureVersion, null );
-        if( version == null ){
-            this.version = new Version().union();
-        }
-        else {
-            this.version = version.union();
-        }
+        setVersion(version);
     }
     
     /**
-     * Obtain a ResourceId that assumes the default, i.e. last, version.
+     * Obtain a ResourceId that represents an explicit request for feature id and feature version
+     * (essentially the quivalent of {@link FeatureId})
      * 
      * @param fid
      * @param featureVersion
      */
     public ResourceIdImpl(String fid, String featureVersion) {
-        this(fid, featureVersion, new Version(Version.Action.LAST));
+        this(fid, featureVersion, (Version) null);
     }
     
     /**
+     * Date range constructor for a feature id; none or one of {@code start} and {@code end} can be
+     * {@code null}, making for an unconstrained date range at either of the ends.
      * 
-     * @param rid
+     * @param fid
+     *            feature id, non null;
+     * @param start
+     *            lower end of the time range, inclusive, or {@code null} only if
+     *            {@code end != null}
+     * @param start
+     *            upper end of the time range, inclusive, or {@code null} only if
+     *            {@code start != null}
      */
     public ResourceIdImpl(String fid, Date start, Date end ) {
-        super(fid, null, null );
-        if( start == null || end == null ){
-            throw new NullPointerException("Start and end time are required for a lookup based on a date range");
+        this(fid, (String) null, (Version) null );
+        if( start == null && end == null ){
+            throw new NullPointerException("At least one of start and end time are required for a lookup based on a date range");
         }
         this.startTime = start;
         this.endTime = end;
@@ -89,7 +94,11 @@ public class ResourceIdImpl extends FeatureIdVersionedImpl implements ResourceId
     }
 
     public void setVersion(final Version version) {
-        this.version = version.union();
+        if (version == null) {
+            this.version = new Version().union();
+        } else {
+            this.version = version.union();
+        }
     }
 
     @Override
@@ -112,8 +121,9 @@ public class ResourceIdImpl extends FeatureIdVersionedImpl implements ResourceId
 
     @Override
     public Version getVersion() {
-        return new Version( version );
+        return Version.valueOf( version );
     }
+    
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof ResourceId)) {
