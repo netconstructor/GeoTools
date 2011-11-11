@@ -212,7 +212,10 @@ public class GeoGitDataStore implements VersioningDataStore {
 
         try {
             final ObjectId featureTypeBlobId;
-            featureTypeBlobId = objectDatabase.put(new SimpleFeatureTypeWriter(createType));
+            WrappedSerialisingFactory serialisingFactory;
+            serialisingFactory = WrappedSerialisingFactory.getInstance();
+            featureTypeBlobId = objectDatabase.put(
+                    serialisingFactory.createSimpleFeatureTypeWriter(createType));
 
             final List<String> namespaceTreePath = Collections.singletonList(namespace);
             MutableTree namespaceTree = objectDatabase.getOrCreateSubTree(namespacesRootTree,
@@ -260,7 +263,10 @@ public class GeoGitDataStore implements VersioningDataStore {
         }
         Preconditions.checkState(TYPE.BLOB.equals(typeRef.getType()));
         final ObjectId objectId = typeRef.getObjectId();
-        final ObjectReader<SimpleFeatureType> reader = new SimpleFeatureTypeReader(name);
+        WrappedSerialisingFactory serialisingFactory;
+        serialisingFactory = WrappedSerialisingFactory.getInstance();
+        final ObjectReader<SimpleFeatureType> reader = 
+                serialisingFactory.createSimpleFeatureTypeReader(name);
         final SimpleFeatureType featureType = objectDatabase.get(objectId, reader);
         return featureType;
     }

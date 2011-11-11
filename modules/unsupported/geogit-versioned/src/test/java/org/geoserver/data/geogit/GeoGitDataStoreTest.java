@@ -12,6 +12,7 @@ import org.geogit.api.RevObject.TYPE;
 import org.geogit.api.RevTree;
 import org.geogit.storage.ObjectDatabase;
 import org.geogit.storage.RefDatabase;
+import org.geogit.storage.WrappedSerialisingFactory;
 import org.geogit.test.RepositoryTestCase;
 import org.geotools.data.SchemaNotFoundException;
 import org.geotools.data.simple.SimpleFeatureSource;
@@ -68,8 +69,10 @@ public class GeoGitDataStoreTest extends RepositoryTestCase {
             assertNotNull(typeRef);
             assertEquals(TYPE.BLOB, typeRef.getType());
 
+            WrappedSerialisingFactory serialisingFactory;
+            serialisingFactory = WrappedSerialisingFactory.getInstance();
             SimpleFeatureType readType = objectDatabase.get(typeRef.getObjectId(),
-                    new SimpleFeatureTypeReader(featureType.getName()));
+                    serialisingFactory.createSimpleFeatureTypeReader(featureType.getName()));
 
             assertEquals(featureType, readType);
 

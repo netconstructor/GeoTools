@@ -1,6 +1,10 @@
 package org.geoserver.data.versioning.decorator;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -16,7 +20,9 @@ import org.geogit.api.RevCommit;
 import org.geogit.api.RevObject.TYPE;
 import org.geogit.repository.Repository;
 import org.geogit.storage.StagingDatabase;
+import org.geoserver.data.versioning.decorator.VersionDetail.VersionType;
 import org.geotools.data.Query;
+import org.geotools.util.DateRange;
 import org.geotools.util.Range;
 import org.opengis.feature.type.Name;
 import org.opengis.filter.identity.ResourceId;
@@ -37,6 +43,131 @@ public class VersionQuery {
         this.typeName = typeName;
     }
 
+    public Iterator<Ref> getByQuery(Query query) {
+        VersionDetail vDetail = VersionDetail.extractVersionDetails(query);
+        if(vDetail == null) {
+            return Iterators.emptyIterator();
+        }
+        VersionDetail.VersionType vType = vDetail.getType();
+        
+        switch (vType) {
+        case Action:
+            return fetchByAction(vDetail.getAction()).iterator();
+        case Date:
+            return fetchByDate(vDetail.getDate()).iterator();
+        case DateRange:
+            return fetchByRange(vDetail.getRange()).iterator();
+        case Index:
+            return fetchByIndex(vDetail.getIndex()).iterator();
+        }
+        return Iterators.emptyIterator();
+    }
+    
+    public Iterator<Ref> filterByQueryVersion(
+            Iterator<Ref> refs, ResourceId rid,  Query query) {
+        VersionDetail vDetail = VersionDetail.extractVersionDetails(query);
+        if(vDetail == null) {
+            return refs;
+        }
+        VersionDetail.VersionType vType = vDetail.getType();
+        
+        switch (vType) {
+        case Action:
+            return filterByAction(refs, vDetail.getAction()).iterator();
+        case Date:
+            return filterByDate(refs, rid, vDetail.getDate()).iterator();
+        case DateRange:
+            return filterByRange(refs, vDetail.getRange()).iterator();
+        case Index:
+            return filterByIndex(refs, vDetail.getIndex()).iterator();
+        }
+        return Iterators.emptyIterator();
+    }
+    
+    private List<Ref> fetchByDate(final Date date) {
+        return null;
+    }
+    
+    private List<Ref> filterByDate(Iterator<Ref> refs, 
+            ResourceId rid, final Date date) {
+        final List<String> path = path(rid.getID());
+        LogOp logOp = ggit.log().addPath(path);
+        
+        try {
+            Iterator<RevCommit> featureCommits = logOp.call();
+            RevCommit closest = findClosest(date, featureCommits);
+            if(closest == null) {
+                featureCommits = Iterators.singletonIterator(closest);
+                List<Ref> closestRefs = getAllInAscendingOrder(ggit, featureCommits, rid.getID());
+                List<Ref> newRefs = new ArrayList<Ref>();
+                while(refs.hasNext()) {
+                    Ref ref = refs.next();
+                    if(closestRefs.contains(ref))
+                        newRefs.add(ref);
+                }
+                return newRefs;
+            }
+        } catch(Exception ex) {
+            /*
+             * TBD. We can't find the appropriate Ref for comparison, so the 
+             * return is fine, but there is no logging here yet.
+             */
+            return Collections.emptyList();
+        }
+        return Collections.emptyList();
+    }
+    
+    private List<Ref> fetchByRange(DateRange range) {
+        return null;
+    }
+    
+    private List<Ref> filterByRange(Iterator<Ref> refs, DateRange range) {
+        List<Ref> rangeRefs = fetchByRange(range);
+        return filterIteratorByList(rangeRefs, refs);
+    }
+    
+    private List<Ref> fetchByAction(Version.Action action) {
+        return null;
+    }
+    
+    private List<Ref> filterByAction(Iterator<Ref> refs, Version.Action action) {
+        if(Version.Action.ALL.equals(action)) {
+            List<Ref> newRefs = new ArrayList<Ref>();
+            while(refs.hasNext()) {
+                Ref ref = refs.next();
+                newRefs.add(ref);
+            }
+            return newRefs;
+        } else if(Version.Action.NEXT.equals(action)) {
+            // iterate through refs and retrieve the previous version
+            return Collections.emptyList();
+        } else if(Version.Action.PREVIOUS.equals(action)) {
+            // iterate through refs and retrieve the next version
+            return Collections.emptyList();
+        }
+        List<Ref> actionRefs = fetchByAction(action);
+        return filterIteratorByList(actionRefs, refs);
+    }
+    
+    private List<Ref> fetchByIndex(int index) {
+        return null;
+    }
+    
+    private List<Ref> filterByIndex(Iterator<Ref> refs, int index) {
+        List<Ref> indexRefs = fetchByIndex(index);
+        return filterIteratorByList(indexRefs, refs);
+    }
+    
+    private List<Ref> filterIteratorByList(List<Ref> refList, Iterator<Ref> refs) {
+        List<Ref> newRefs = new ArrayList<Ref>();
+        while(refs.hasNext()) {
+            Ref ref = refs.next();
+            if(refList.contains(ref))
+                newRefs.add(ref);
+        }
+        return newRefs;
+    }
+    
     /**
      * @param id
      * @return an iterator for all the requested versions of a given feature, or the empty iterator

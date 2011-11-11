@@ -41,6 +41,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
     protected static final String sampleTypeSpec = "st:String,it:Integer,pn:Point:srid=4326,db:Double";
     private static String newString1 = "New String Value";
     private static String newString2 = "Another new string";
+    private static String newString3 = "Third iteration change.";
     protected SimpleFeatureType sampleType;
     protected SimpleFeature sample1;
     protected SimpleFeature sample2;
@@ -62,6 +63,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
     protected SimpleFeature test1b;
     protected SimpleFeature test2b;
     protected SimpleFeature test3b;
+    protected SimpleFeature test2c;
     
     
     /**
@@ -149,6 +151,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
 
     protected void updateSampleFeatures() throws Exception {
         Transaction trans = null;
+        assertNull(sample1b);
         try {
             SimpleFeatureStore store = (SimpleFeatureStore)versioned.getFeatureSource(sampleName);
             trans = new DefaultTransaction("DecoratedTestCase.updateSampleFeatures()");
@@ -184,6 +187,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
 
     protected void updateTestFeatures() throws Exception {
         Transaction trans = null;
+        assertNull(test1b);
         try {
             SimpleFeatureStore store = (SimpleFeatureStore)versioned.getFeatureSource(testName);
             trans = new DefaultTransaction("DecoratedTestCase.updateTestFeatures()");
@@ -214,6 +218,32 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
             if(trans != null)
                 trans.close();
         }
+    }
+    
+    protected void finalTestFeatureUpdate() throws Exception {
+        Transaction trans = null;
+        assertNull(test2c);
+        try {
+            SimpleFeatureStore store = (SimpleFeatureStore)versioned.getFeatureSource(testName);
+            trans = new DefaultTransaction("DecoratedTestCase.finalTestFeatureUpate()");
+            store.setTransaction(trans);
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.id(ff.featureId(idT2));
+            store.modifyFeatures("st", newString3, filter);
+            trans.commit();
+            
+            SimpleFeatureBuilder fb = new SimpleFeatureBuilder(testType);
+            test2c = fb.copy(test2b);
+            test2c.setAttribute("st", newString3);
+        } catch(Exception ex) {
+            if(trans != null)
+                trans.rollback();
+            throw ex;
+        } finally {
+            if(trans != null)
+                trans.close();
+        }
+        
     }
     
     protected List<SimpleFeature> getCurrentFeatures(String typeName) {
