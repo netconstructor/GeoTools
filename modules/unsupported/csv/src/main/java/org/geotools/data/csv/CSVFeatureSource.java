@@ -3,12 +3,11 @@ package org.geotools.data.csv;
 import java.io.IOException;
 
 import org.geotools.data.FeatureReader;
-import org.geotools.data.FeatureWriter;
 import org.geotools.data.Query;
 import org.geotools.data.simple.SimpleFeatureIterator;
 import org.geotools.data.store.ContentEntry;
 import org.geotools.data.store.ContentFeatureCollection;
-import org.geotools.data.store.ContentFeatureStore;
+import org.geotools.data.store.ContentFeatureSource;
 import org.geotools.feature.simple.SimpleFeatureTypeBuilder;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
@@ -24,7 +23,7 @@ import com.vividsolutions.jts.geom.Point;
  *
  * @source $URL$
  */
-public class CSVFeatureSource extends ContentFeatureStore {
+public class CSVFeatureSource extends ContentFeatureSource {
     
     public CSVFeatureSource(ContentEntry entry, Query query) {
         super(entry,query);
@@ -66,8 +65,6 @@ public class CSVFeatureSource extends ContentFeatureStore {
         }
         iter.close();
         return count;
-//
-//        
 //        CsvReader reader = getDataStore().read();
 //        try {
 //            boolean connect = reader.readHeaders();
@@ -127,12 +124,6 @@ public class CSVFeatureSource extends ContentFeatureStore {
         finally {
             reader.close();
         }
-    }
-    
-    @Override
-    protected FeatureWriter<SimpleFeatureType, SimpleFeature> getWriterInternal(Query query, int flags) throws IOException {
-        // TODO Perhaps: make separate writers for update and append.
-        return new CSVFeatureWriter(getState(), query, (flags | WRITER_ADD) == WRITER_ADD);
     }
 
 }
