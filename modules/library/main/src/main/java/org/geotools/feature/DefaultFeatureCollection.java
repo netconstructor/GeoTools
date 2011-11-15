@@ -70,7 +70,7 @@ public class DefaultFeatureCollection implements SimpleFeatureCollection {
      * with shapefile etc...
      * </p>
      */
-    private SortedMap<String,SimpleFeature> contents = new TreeMap<String,SimpleFeature>();
+    protected SortedMap<String,SimpleFeature> contents = new TreeMap<String,SimpleFeature>();
     
     /** Internal listener storage list */
     //private List listeners = new ArrayList(2);
@@ -103,7 +103,7 @@ public class DefaultFeatureCollection implements SimpleFeatureCollection {
      */
     public DefaultFeatureCollection(String id, SimpleFeatureType memberType) {
     	this.id = id == null ? "featureCollection" : id;
-        this.schema = memberType;    	
+        this.schema = memberType;
     }
 
     /**

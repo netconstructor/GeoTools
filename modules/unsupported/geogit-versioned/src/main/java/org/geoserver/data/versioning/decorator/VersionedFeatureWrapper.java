@@ -46,5 +46,15 @@ class VersionedFeatureWrapper {
         public String getID() {
             return super.getID(); // + '@' + versionId;
         }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if(obj == null || !(obj instanceof SimpleFeature))
+                return false;
+            SimpleFeature other = (SimpleFeature)obj;
+            if(!getIdentifier().equalsExact(other.getIdentifier()))
+                return false;
+            return super.equals(obj);
+        }
     }
 }

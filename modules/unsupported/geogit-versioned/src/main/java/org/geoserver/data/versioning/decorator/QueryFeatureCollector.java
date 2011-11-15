@@ -75,6 +75,8 @@ public class QueryFeatureCollector implements Iterable<Feature> {
             try {
                 ObjectReader<Feature> featureReader = serialisingFactory.createFeatureReader(type, featureId);
                 feature = database.get(contentId, featureReader);
+                if(!feature.getType().equals(type))
+                    throw new IOException("Invalid feature type returned.");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

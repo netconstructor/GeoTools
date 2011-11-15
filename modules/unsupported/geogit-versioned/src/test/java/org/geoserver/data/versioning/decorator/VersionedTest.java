@@ -1,6 +1,5 @@
 package org.geoserver.data.versioning.decorator;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.geotools.filter.FilterFactoryImpl;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.Version;
 
 public class VersionedTest extends DecoratedTestCase {
     
@@ -42,6 +42,153 @@ public class VersionedTest extends DecoratedTestCase {
         }
     }
     
+    public void testResourceId() throws Exception {
+        SimpleFeatureIterator feats = null;
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>(1);
+        featList.add(sample1);
+        try {
+            SimpleFeatureSource source = versioned.getFeatureSource(sampleName);
+            assertNotNull(source);
+            
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.id(ff.resourceId(idS1, sampleFid1.getFeatureVersion(), null));
+            
+            Query query = new Query(sampleName, filter);
+            SimpleFeatureCollection collection = source.getFeatures(query);
+            assertNotNull(collection);
+            assertEquals(featList.size(), collection.size());
+            feats = collection.features();
+            assertNotNull(feats);
+            while(feats.hasNext()) {
+                SimpleFeature feat = feats.next();
+                assertNotNull(feat);
+                LOGGER.info(feat.toString());
+                assertTrue(feat.toString() + " is expected.", 
+                        containsFeature(feat, featList));
+            }
+            
+        } finally {
+            if(feats != null)
+                feats.close();
+        }
+    }
+    
+    public void testResourceIdHistory() throws Exception {
+        updateSampleFeatures();
+        SimpleFeatureIterator feats = null;
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>(1);
+        featList.add(sample2);
+        try {
+            SimpleFeatureSource source = versioned.getFeatureSource(sampleName);
+            assertNotNull(source);
+            
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.id(ff.resourceId(idS2, sampleFid2.getFeatureVersion(), null));
+            
+            Query query = new Query(sampleName, filter);
+            SimpleFeatureCollection collection = source.getFeatures(query);
+            assertNotNull(collection);
+            assertEquals(featList.size(), collection.size());
+            feats = collection.features();
+            assertNotNull(feats);
+            while(feats.hasNext()) {
+                SimpleFeature feat = feats.next();
+                assertNotNull(feat);
+                LOGGER.info(feat.toString());
+                assertTrue(feat.toString() + " is expected.", 
+                        containsFeature(feat, featList));
+            }
+        } finally {
+            if(feats != null)
+                feats.close();
+        }
+    }
+    
+    public void testResourceIdTrivialQuery() throws Exception {
+        updateSampleFeatures();
+        SimpleFeatureIterator feats = null;
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>(1);
+        featList.add(sample1);
+        try {
+            SimpleFeatureSource source = versioned.getFeatureSource(sampleName);
+            assertNotNull(source);
+            
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.id(ff.resourceId(idS1, sampleFid1.getFeatureVersion(), null));
+            
+            Query query = new Query(sampleName, filter);
+            query.setVersion(Version.Action.ALL);
+            SimpleFeatureCollection collection = source.getFeatures(query);
+            assertNotNull(collection);
+            assertEquals(featList.size(), collection.size());
+            feats = collection.features();
+            assertNotNull(feats);
+            while(feats.hasNext()) {
+                SimpleFeature feat = feats.next();
+                assertNotNull(feat);
+                LOGGER.info(feat.toString());
+                assertTrue(feat.toString() + " is expected.", 
+                        containsFeature(feat, featList));
+            }
+        } finally {
+            if(feats != null)
+                feats.close();
+        }
+    }
+    
+    public void testResourceIdReinforcingQuery() throws Exception {
+        updateSampleFeatures();
+        SimpleFeatureIterator feats = null;
+        List<SimpleFeature> featList = new ArrayList<SimpleFeature>(1);
+        featList.add(sample1);
+        try {
+            SimpleFeatureSource source = versioned.getFeatureSource(sampleName);
+            assertNotNull(source);
+            
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.id(ff.resourceId(idS1, sampleFid1.getFeatureVersion(), null));
+            
+            Query query = new Query(sampleName, filter);
+            query.setVersion(Version.Action.FIRST);
+            SimpleFeatureCollection collection = source.getFeatures(query);
+            assertNotNull(collection);
+            assertEquals(featList.size(), collection.size());
+            feats = collection.features();
+            assertNotNull(feats);
+            while(feats.hasNext()) {
+                SimpleFeature feat = feats.next();
+                assertNotNull(feat);
+                LOGGER.info(feat.toString());
+                assertTrue(feat.toString() + " is expected.", 
+                        containsFeature(feat, featList));
+            }
+        } finally {
+            if(feats != null)
+                feats.close();
+        }
+    }
+    
+    public void testResourceIdContradictoryQuery() throws Exception {
+        updateSampleFeatures();
+        SimpleFeatureIterator feats = null;
+        try {
+            SimpleFeatureSource source = versioned.getFeatureSource(sampleName);
+            assertNotNull(source);
+            
+            FilterFactory2 ff = new FilterFactoryImpl();
+            Filter filter = ff.id(ff.resourceId(idS1, sampleFid1.getFeatureVersion(), null));
+            
+            Query query = new Query(sampleName, filter);
+            query.setVersion(Version.Action.LAST);
+            SimpleFeatureCollection collection = source.getFeatures(query);
+            assertNotNull(collection);
+            assertEquals(0, collection.size());
+        } finally {
+            if(feats != null)
+                feats.close();
+        }
+    }
+    
     public void testFullHistory() throws Exception {
         updateTestFeatures();
         SimpleFeatureIterator feats = null;
@@ -62,7 +209,6 @@ public class VersionedTest extends DecoratedTestCase {
             while(feats.hasNext()) {
                 SimpleFeature feat = feats.next();
                 assertNotNull(feat);
-                LOGGER.info(feat.toString());
                 assertTrue(containsFeature(feat, featList));
             }
         } finally {

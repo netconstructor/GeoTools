@@ -1,14 +1,12 @@
 package org.geoserver.data.versioning.decorator;
 
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import org.geogit.api.DiffEntry;
 import org.geogit.api.DiffOp;
@@ -18,9 +16,9 @@ import org.geogit.api.ObjectId;
 import org.geogit.api.Ref;
 import org.geogit.api.RevCommit;
 import org.geogit.api.RevObject.TYPE;
+import org.geogit.api.RevTree;
 import org.geogit.repository.Repository;
 import org.geogit.storage.StagingDatabase;
-import org.geoserver.data.versioning.decorator.VersionDetail.VersionType;
 import org.geotools.data.Query;
 import org.geotools.util.DateRange;
 import org.geotools.util.Range;
@@ -33,6 +31,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Iterators;
 
 public class VersionQuery {
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.data.geogit.decorator");
 
     private final Name typeName;
 
@@ -64,7 +63,7 @@ public class VersionQuery {
     }
     
     public Iterator<Ref> filterByQueryVersion(
-            Iterator<Ref> refs, ResourceId rid,  Query query) {
+            Iterator<Ref> refs, Query query) {
         VersionDetail vDetail = VersionDetail.extractVersionDetails(query);
         if(vDetail == null) {
             return refs;
@@ -75,7 +74,7 @@ public class VersionQuery {
         case Action:
             return filterByAction(refs, vDetail.getAction()).iterator();
         case Date:
-            return filterByDate(refs, rid, vDetail.getDate()).iterator();
+            return filterByDate(refs, vDetail.getDate()).iterator();
         case DateRange:
             return filterByRange(refs, vDetail.getRange()).iterator();
         case Index:
@@ -85,36 +84,22 @@ public class VersionQuery {
     }
     
     private List<Ref> fetchByDate(final Date date) {
-        return null;
-    }
-    
-    private List<Ref> filterByDate(Iterator<Ref> refs, 
-            ResourceId rid, final Date date) {
-        final List<String> path = path(rid.getID());
-        LogOp logOp = ggit.log().addPath(path);
-        
+        LogOp logOp = ggit.log().addPath(typeNamePath());
         try {
             Iterator<RevCommit> featureCommits = logOp.call();
-            RevCommit closest = findClosest(date, featureCommits);
-            if(closest == null) {
-                featureCommits = Iterators.singletonIterator(closest);
-                List<Ref> closestRefs = getAllInAscendingOrder(ggit, featureCommits, rid.getID());
-                List<Ref> newRefs = new ArrayList<Ref>();
-                while(refs.hasNext()) {
-                    Ref ref = refs.next();
-                    if(closestRefs.contains(ref))
-                        newRefs.add(ref);
-                }
-                return newRefs;
-            }
+            RevCommit commit = findClosest(date, featureCommits);
+            return getRefsByCommit(commit);
         } catch(Exception ex) {
             /*
-             * TBD. We can't find the appropriate Ref for comparison, so the 
-             * return is fine, but there is no logging here yet.
+             * Need some logging.
              */
             return Collections.emptyList();
         }
-        return Collections.emptyList();
+    }
+    
+    private List<Ref> filterByDate(Iterator<Ref> refs, final Date date) {
+        List<Ref> dateRefs = fetchByDate(date);
+        return filterIteratorByList(dateRefs, refs);
     }
     
     private List<Ref> fetchByRange(DateRange range) {
@@ -127,7 +112,41 @@ public class VersionQuery {
     }
     
     private List<Ref> fetchByAction(Version.Action action) {
-        return null;
+        List<Ref> featureRefs = new ArrayList<Ref>();
+        if(Version.Action.ALL.equals(action)) {
+            LogOp logOp = ggit.log().addPath(typeNamePath());
+            try {
+                Iterator<RevCommit> featureCommits = logOp.call();
+                while(featureCommits.hasNext()) {
+                    featureRefs.addAll(getRefsByCommit(featureCommits.next()));
+                }
+            } catch(Exception ex) {
+                return Collections.emptyList();
+            }
+            
+        } else if(Version.Action.NEXT.equals(action) || 
+                Version.Action.PREVIOUS.equals(action)) {
+            /*
+             * There is no reference point for NEXT/PREVIOUS, 
+             * so we're going to leave them with nothing.
+             */
+            return featureRefs;
+        } else if(Version.Action.FIRST.equals(action)) {
+            featureRefs = fetchByIndex(1);
+        } else if(Version.Action.LAST.equals(action)) {
+            LogOp logOp = ggit.log().addPath(typeNamePath()).setLimit(1);
+            try {
+                Iterator<RevCommit> featureCommits = logOp.call();
+                if(featureCommits.hasNext()) {
+                    RevCommit commit = featureCommits.next();
+                    return getRefsByCommit(commit);
+                }
+            } catch(Exception ex) {
+                return Collections.emptyList();
+            }
+            
+        }
+        return featureRefs;
     }
     
     private List<Ref> filterByAction(Iterator<Ref> refs, Version.Action action) {
@@ -150,7 +169,30 @@ public class VersionQuery {
     }
     
     private List<Ref> fetchByIndex(int index) {
-        return null;
+        LogOp logOp = ggit.log().addPath(typeNamePath());
+        try {
+            Iterator<RevCommit> featureCommits = logOp.call();
+            RevCommit[] commitTrail = new RevCommit[index];
+            int ind = 0;
+            int count = 0;
+            RevCommit latest = null;
+            RevCommit target = null;
+            while(featureCommits.hasNext()) {
+                RevCommit commit = featureCommits.next();
+                if(latest == null)
+                    latest = commit;
+                commitTrail[ind] = commit;
+                ind = (ind + 1) % index;
+                count++;
+            }
+            if(count < index)
+                target = latest;
+            else 
+                target = commitTrail[(ind + 1) % index];
+            return getRefsByCommit(target);
+        } catch(Exception ex) {
+            return Collections.emptyList();
+        }
     }
     
     private List<Ref> filterByIndex(Iterator<Ref> refs, int index) {
@@ -158,7 +200,29 @@ public class VersionQuery {
         return filterIteratorByList(indexRefs, refs);
     }
     
+    private List<Ref> getRefsByCommit(RevCommit commit) {
+        List<Ref> treeRefs = new ArrayList<Ref>();
+        if(commit != null) {
+            ObjectId commitTreeId = commit.getTreeId();
+            RevTree commitTree = ggit.getRepository().getTree(commitTreeId);
+            Ref nsRef = commitTree.get(typeName.getNamespaceURI());
+            RevTree nsTree = ggit.getRepository().getTree(nsRef.getObjectId());
+            Ref typeRef = nsTree.get(typeName.getLocalPart());
+            RevTree typeTree = ggit.getRepository().getTree(typeRef.getObjectId());
+            Iterator<Ref> it = typeTree.iterator(null);
+            
+            while(it.hasNext()) {
+                Ref nextRef = it.next();
+                treeRefs.add(nextRef);
+            }
+        }
+        return treeRefs;
+    }
+    
+    
     private List<Ref> filterIteratorByList(List<Ref> refList, Iterator<Ref> refs) {
+        Preconditions.checkNotNull(refs);
+        Preconditions.checkNotNull(refList);
         List<Ref> newRefs = new ArrayList<Ref>();
         while(refs.hasNext()) {
             Ref ref = refs.next();
@@ -388,14 +452,18 @@ public class VersionQuery {
         }
         return currFeatureRef;
     }
-
-    private List<String> path(final String featureId) {
+    
+    private List<String> typeNamePath() {
         List<String> path = new ArrayList<String>(3);
-
-        if (null != typeName.getNamespaceURI()) {
+        if(null != typeName.getNamespaceURI()) {
             path.add(typeName.getNamespaceURI());
         }
         path.add(typeName.getLocalPart());
+        return path;
+    }
+
+    private List<String> path(final String featureId) {
+        List<String> path = typeNamePath();
         path.add(featureId);
 
         return path;

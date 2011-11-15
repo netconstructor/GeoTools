@@ -1,6 +1,7 @@
 package org.geoserver.data.versioning.decorator;
 
 import static org.geoserver.data.versioning.decorator.VersionFilters.getVersioningFilter;
+import static org.geoserver.data.versioning.decorator.VersionFilters.getUnversioningFilter;
 
 import java.awt.RenderingHints.Key;
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import org.geogit.api.RevTree;
 import org.geogit.repository.Repository;
@@ -19,7 +21,6 @@ import org.geotools.data.FeatureSource;
 import org.geotools.data.Query;
 import org.geotools.data.QueryCapabilities;
 import org.geotools.data.ResourceInfo;
-import org.geotools.feature.DefaultFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.opengis.feature.Feature;
@@ -32,7 +33,6 @@ import org.opengis.filter.Id;
 import org.opengis.filter.identity.FeatureId;
 import org.opengis.filter.identity.Identifier;
 import org.opengis.filter.identity.ResourceId;
-import org.springframework.util.Assert;
 
 /**
  * Provides support for {@link ResourceId} filtering by means of wrapping an unversioned feature
@@ -45,6 +45,7 @@ import org.springframework.util.Assert;
 @SuppressWarnings({ "rawtypes", "unchecked" })
 public class FeatureSourceDecorator<T extends FeatureType, F extends Feature> implements
         VersioningFeatureSource<T, F> {
+    private static final Logger LOGGER = org.geotools.util.logging.Logging.getLogger("org.geoserver.data.geogit.decorator");
 
     protected final FeatureSource<T, F> unversioned;
 
@@ -91,29 +92,40 @@ public class FeatureSourceDecorator<T extends FeatureType, F extends Feature> im
     protected FeatureCollection getFeatures(final Id versioningFilter, final Query extraQuery)
             throws IOException {
 
-        Assert.notNull(versioningFilter);
-        Assert.isTrue(versioningFilter.getIdentifiers().size() > 0);
+        //        Assert.notNull(versioningFilter);
+        //        Assert.isTrue(versioningFilter.getIdentifiers().size() > 0);
+        final FeatureType featureType = getSchema();
+        Iterable<Feature> versionQuery;
+        if(versioningFilter == null || versioningFilter.getIdentifiers().size() == 0) {
+            versionQuery = new QueryFeatureCollector(repository, featureType, extraQuery);
+        } else {
 
-        final Set<Identifier> identifiers = versioningFilter.getIdentifiers();
-        final Set<ResourceId> resourceIds = new HashSet<ResourceId>();
-        for (Identifier id : identifiers) {
-            if (id instanceof ResourceId) {
-                resourceIds.add((ResourceId) id);
+            final Set<Identifier> identifiers = versioningFilter.getIdentifiers();
+            final Set<ResourceId> resourceIds = new HashSet<ResourceId>();
+            for (Identifier id : identifiers) {
+                if (id instanceof ResourceId) {
+                    resourceIds.add((ResourceId) id);
+                }
+            }
+            if (resourceIds.size() == 0) {
+                throw new IllegalArgumentException("At least one " + ResourceId.class.getName()
+                        + " should be provided: " + identifiers);
+            }
+
+            if(extraQuery.getVersion() != null) {
+                versionQuery = new ResourceIdQueryFeatureCollector(repository, featureType, resourceIds, extraQuery);
+            } else {
+                versionQuery = new ResourceIdFeatureCollector(repository, featureType, resourceIds);
             }
         }
-        if (resourceIds.size() == 0) {
-            throw new IllegalArgumentException("At least one " + ResourceId.class.getName()
-                    + " should be provided: " + identifiers);
-        }
 
-        final FeatureType featureType = getSchema();
-        ResourceIdFeatureCollector versionQuery;
-        versionQuery = new ResourceIdFeatureCollector(repository, featureType, resourceIds);
-
-        DefaultFeatureCollection features = new DefaultFeatureCollection(null,
+        DefaultVersionedFeatureCollection features = new DefaultVersionedFeatureCollection(null,
                 (SimpleFeatureType) featureType);
-        
+
         for (Feature f : versionQuery) {
+            boolean contained = features.contains(f);
+            LOGGER.info("Feature " + (contained ? "is" : "is not") + 
+                    " found in the collection: " + f);
             features.add((SimpleFeature) f);
         }
         return features;
@@ -205,14 +217,16 @@ public class FeatureSourceDecorator<T extends FeatureType, F extends Feature> im
             return unversioned.getFeatures(query);
         }
         versioningFilter = getVersioningFilter(query.getFilter());
-        if (versioningFilter == null) {
+        if (versioningFilter == null && query.getVersion() == null) {
             FeatureCollection<T, F> delegate = unversioned.getFeatures(query);
             final RevTree currentTypeTree = getCurrentVersion();
 
             return createFeatureCollection(delegate, currentTypeTree);
         }
+        Filter unversionedFilter = getUnversioningFilter(query.getFilter());
 
-        return getFeatures(versioningFilter, query);
+        FeatureCollection coll = getFeatures(versioningFilter, query);
+        return coll.subCollection(unversionedFilter);
     }
 
     protected FeatureCollection<T, F> createFeatureCollection(FeatureCollection<T, F> delegate,

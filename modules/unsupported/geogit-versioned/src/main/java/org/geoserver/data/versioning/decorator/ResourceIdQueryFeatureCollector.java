@@ -48,12 +48,13 @@ public class ResourceIdQueryFeatureCollector implements Iterable<Feature> {
             for (ResourceId rid : resourceIds) {
                 Iterator<Ref> ridIterator;
                 ridIterator = versionQuery.get(rid);
-                ridIterator = versionQuery.filterByQueryVersion(ridIterator, rid, query);
                 featureRefs = Iterators.concat(featureRefs, ridIterator);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+        
+        featureRefs = versionQuery.filterByQueryVersion(featureRefs, query);
 
         Iterator<Feature> features = Iterators.transform(featureRefs, new RefToFeature(repository,
                 featureType));

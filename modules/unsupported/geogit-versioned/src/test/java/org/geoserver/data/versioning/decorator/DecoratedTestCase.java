@@ -30,6 +30,7 @@ import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.filter.Filter;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.filter.identity.FeatureId;
 
 public abstract class DecoratedTestCase extends RepositoryTestCase {
 
@@ -46,6 +47,9 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
     protected SimpleFeature sample1;
     protected SimpleFeature sample2;
     protected SimpleFeature sample3;
+    protected FeatureId sampleFid1;
+    protected FeatureId sampleFid2;
+    protected FeatureId sampleFid3;
     protected SimpleFeature sample1b;
     protected SimpleFeature sample2b;
     protected SimpleFeature sample3b;
@@ -129,7 +133,11 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
         collection.add(sample1);
         collection.add(sample2);
         collection.add(sample3);
-        store.addFeatures(collection);
+        List<FeatureId> ids = store.addFeatures(collection);
+        assertEquals(3, ids.size());
+        sampleFid1 = ids.get(0);
+        sampleFid2 = ids.get(1);
+        sampleFid3 = ids.get(2);
         
         tranny.commit();
         tranny.close();
@@ -316,7 +324,7 @@ public abstract class DecoratedTestCase extends RepositoryTestCase {
             if(feat.equals(it.next()))
                 return true;
         }
-        LOGGER.info("Could not match feature to list: " + feat.toString());
+        LOGGER.info("Could not match feature to list: " + feat);
         return false;
     }
 }
